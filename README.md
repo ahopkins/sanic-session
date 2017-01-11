@@ -10,7 +10,7 @@ sanic_session provides a number of *session interfaces* for you to store a clien
 
 ## Documentation
 
-Documentation is available at Read The Docs.
+Documentation is available at [PythonHosted](https://pythonhosted.org/sanic_session/).
 
 ## Example
 
@@ -53,4 +53,4 @@ A simple example uses the in-memory session interface.
         app.run(host="0.0.0.0", port=8000, debug=True)
 ```
 
-Examples of using redis and memcache backed sessions can be found in the documentation, under Using the Interfaces.
+Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](https://pythonhosted.org/sanic_session/using_the_interfaces.html).
