@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sanic_session package &#8212; sanic_session 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sanic-session-package">
+<h1>sanic_session package<a class="headerlink" href="#sanic-session-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sanic_session.base">
+<span id="sanic-session-base-module"></span><h2>sanic_session.base module<a class="headerlink" href="#module-sanic_session.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.base.BaseSessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.base.</code><code class="descname">BaseSessionInterface</code><a class="headerlink" href="#sanic_session.base.BaseSessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sanic_session.base.SessionDict">
+<em class="property">class </em><code class="descclassname">sanic_session.base.</code><code class="descname">SessionDict</code><span class="sig-paren">(</span><em>initial=None</em>, <em>sid=None</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.base.SessionDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sanic_session.utils.CallbackDict" title="sanic_session.utils.CallbackDict"><code class="xref py py-class docutils literal"><span class="pre">sanic_session.utils.CallbackDict</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="inmemorysessioninterface">
+<h2>InMemorySessionInterface<a class="headerlink" href="#inmemorysessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.InMemorySessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">InMemorySessionInterface</code><span class="sig-paren">(</span><em>domain: str = None</em>, <em>expiry: int = 2678400</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sanic_session.base.BaseSessionInterface" title="sanic_session.base.BaseSessionInterface"><code class="xref py py-class docutils literal"><span class="pre">sanic_session.base.BaseSessionInterface</span></code></a></p>
+<dl class="method">
+<dt id="sanic_session.InMemorySessionInterface.open">
+<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an in-memory session onto the request. Restores the client&#8217;s session
+from memory if one exists.The session will be available on
+<cite>request.session</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The request, which a sessionwill be opened onto.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>dict:</dt>
+<dd>the client&#8217;s session data,
+attached as well to <cite>request.session</cite>.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.InMemorySessionInterface.save">
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the session to the in-memory session store.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The Sanic request which has a session attached.</dd>
+<dt>response (sanic.response.Response):</dt>
+<dd>The Sanic response. Cookies with the appropriate expiration
+will be added onto this response.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="memcachesessioninterface">
+<h2>MemcacheSessionInterface<a class="headerlink" href="#memcachesessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.MemcacheSessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">MemcacheSessionInterface</code><a class="headerlink" href="#sanic_session.MemcacheSessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sanic_session.base.BaseSessionInterface" title="sanic_session.base.BaseSessionInterface"><code class="xref py py-class docutils literal"><span class="pre">sanic_session.base.BaseSessionInterface</span></code></a></p>
+<dl class="method">
+<dt id="sanic_session.MemcacheSessionInterface.open">
+<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.MemcacheSessionInterface.save">
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="redissessioninterface">
+<h2>RedisSessionInterface<a class="headerlink" href="#redissessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.RedisSessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">RedisSessionInterface</code><a class="headerlink" href="#sanic_session.RedisSessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sanic_session.base.BaseSessionInterface" title="sanic_session.base.BaseSessionInterface"><code class="xref py py-class docutils literal"><span class="pre">sanic_session.base.BaseSessionInterface</span></code></a></p>
+<dl class="method">
+<dt id="sanic_session.RedisSessionInterface.open">
+<code class="descname">open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface.open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.RedisSessionInterface.save">
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sanic_session.utils">
+<span id="sanic-session-utils-module"></span><h2>sanic_session.utils module<a class="headerlink" href="#module-sanic_session.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.utils.CallbackDict">
+<em class="property">class </em><code class="descclassname">sanic_session.utils.</code><code class="descname">CallbackDict</code><span class="sig-paren">(</span><em>initial=None</em>, <em>on_update=None</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.CallbackDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sanic_session.utils.UpdateDictMixin" title="sanic_session.utils.UpdateDictMixin"><code class="xref py py-class docutils literal"><span class="pre">sanic_session.utils.UpdateDictMixin</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<p>A dict that calls a function passed every time something is changed.
+The function is passed the dict instance.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="sanic_session.utils.ExpiringDict">
+<em class="property">class </em><code class="descclassname">sanic_session.utils.</code><code class="descname">ExpiringDict</code><a class="headerlink" href="#sanic_session.utils.ExpiringDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<dl class="method">
+<dt id="sanic_session.utils.ExpiringDict.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>key: typing.Union[str, int]</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.ExpiringDict.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.utils.ExpiringDict.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>key: typing.Union[str, int]</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.ExpiringDict.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.utils.ExpiringDict.set">
+<code class="descname">set</code><span class="sig-paren">(</span><em>key: typing.Union[str, int], val: typing.Any, expiry: int</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.ExpiringDict.set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sanic_session.utils.UpdateDictMixin">
+<em class="property">class </em><code class="descclassname">sanic_session.utils.</code><code class="descname">UpdateDictMixin</code><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Makes dicts call <cite>self.on_update</cite> on modifications.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.5.</span></p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Private:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="sanic_session.utils.UpdateDictMixin.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="sanic_session.utils.UpdateDictMixin.on_update">
+<code class="descname">on_update</code><em class="property"> = None</em><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin.on_update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.utils.UpdateDictMixin.pop">
+<code class="descname">pop</code><span class="sig-paren">(</span><em>key</em>, <em>default=no value</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin.pop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.utils.UpdateDictMixin.popitem">
+<code class="descname">popitem</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin.popitem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.utils.UpdateDictMixin.setdefault">
+<code class="descname">setdefault</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin.setdefault" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.utils.UpdateDictMixin.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.utils.UpdateDictMixin.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sanic_session">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sanic_session" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">sanic_session package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-sanic_session.base">sanic_session.base module</a></li>
+<li><a class="reference internal" href="#inmemorysessioninterface">InMemorySessionInterface</a></li>
+<li><a class="reference internal" href="#memcachesessioninterface">MemcacheSessionInterface</a></li>
+<li><a class="reference internal" href="#redissessioninterface">RedisSessionInterface</a></li>
+<li><a class="reference internal" href="#module-sanic_session.utils">sanic_session.utils module</a></li>
+<li><a class="reference internal" href="#module-sanic_session">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/sanic_session.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Suby Raman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/sanic_session.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

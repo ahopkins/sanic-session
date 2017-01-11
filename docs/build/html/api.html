@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Documentation &#8212; sanic_session</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Using the interfaces" href="using_the_interfaces.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="api-documentation">
+<span id="api"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="inmemorysessioninterface">
+<h2>InMemorySessionInterface<a class="headerlink" href="#inmemorysessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.InMemorySessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">InMemorySessionInterface</code><span class="sig-paren">(</span><em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="sanic_session.InMemorySessionInterface.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.InMemorySessionInterface.open">
+<code class="descname">open</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span> &rarr; sanic_session.base.SessionDict<a class="headerlink" href="#sanic_session.InMemorySessionInterface.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an in-memory session onto the request. Restores the client&#8217;s session
+from memory if one exists.The session will be available on
+<cite>request.session</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The request, which a session will be opened onto.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>dict:</dt>
+<dd>the client&#8217;s session data,
+attached as well to <cite>request.session</cite>.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.InMemorySessionInterface.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>request</em>, <em>response</em><span class="sig-paren">)</span> &rarr; None<a class="headerlink" href="#sanic_session.InMemorySessionInterface.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the session to the in-memory session store.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The sanic request which has an attached session.</dd>
+<dt>response (sanic.response.Response):</dt>
+<dd>The Sanic response. Cookies with the appropriate expiration
+will be added onto this response.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="memcachesessioninterface">
+<h2>MemcacheSessionInterface<a class="headerlink" href="#memcachesessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.MemcacheSessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">MemcacheSessionInterface</code><span class="sig-paren">(</span><em>memcache_connection</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="sanic_session.MemcacheSessionInterface.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>memcache_connection</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the interface for storing client sessions in memcache.
+Requires a client object establised with <cite>asyncio_memcache</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>memcache_connection (aiomccache.Client):</dt>
+<dd>The memcache client used for interfacing with memcache.</dd>
+<dt>domain (str, optional):</dt>
+<dd>Optional domain which will be attached to the cookie.</dd>
+<dt>expiry (int, optional):</dt>
+<dd>Seconds until the session should expire.</dd>
+<dt>httponly (bool, optional):</dt>
+<dd>Adds the <cite>httponly</cite> flag to the session cookie.</dd>
+<dt>cookie_name (str, optional):</dt>
+<dd>Name used for the client cookie.</dd>
+<dt>prefix (str, optional):</dt>
+<dd>Memcache keys will take the format of <cite>prefix+session_id</cite>;
+specify the prefix here.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.MemcacheSessionInterface.open">
+<code class="descname">open</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span> &rarr; dict<a class="headerlink" href="#sanic_session.MemcacheSessionInterface.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a session onto the request. Restores the client&#8217;s session
+from memcache if one exists.The session data will be available on
+<cite>request.session</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The request, which a sessionwill be opened onto.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>dict:</dt>
+<dd>the client&#8217;s session data,
+attached as well to <cite>request.session</cite>.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.MemcacheSessionInterface.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>request</em>, <em>response</em><span class="sig-paren">)</span> &rarr; None<a class="headerlink" href="#sanic_session.MemcacheSessionInterface.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the session to memcache.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The sanic request which has an attached session.</dd>
+<dt>response (sanic.response.Response):</dt>
+<dd>The Sanic response. Cookies with the appropriate expiration
+will be added onto this response.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="redissessioninterface">
+<h2>RedisSessionInterface<a class="headerlink" href="#redissessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.RedisSessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">RedisSessionInterface</code><span class="sig-paren">(</span><em>redis_getter: typing.Callable</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="sanic_session.RedisSessionInterface.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>redis_getter: typing.Callable</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a session interface backed by Redis.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>redis_getter (Callable):</dt>
+<dd>Coroutine which should return an asyncio_redis connection pool
+(suggested) or an asyncio_redis Redis connection.</dd>
+<dt>domain (str, optional):</dt>
+<dd>Optional domain which will be attached to the cookie.</dd>
+<dt>expiry (int, optional):</dt>
+<dd>Seconds until the session should expire.</dd>
+<dt>httponly (bool, optional):</dt>
+<dd>Adds the <cite>httponly</cite> flag to the session cookie.</dd>
+<dt>cookie_name (str, optional):</dt>
+<dd>Name used for the client cookie.</dd>
+<dt>prefix (str, optional):</dt>
+<dd>Memcache keys will take the format of <cite>prefix+session_id</cite>;
+specify the prefix here.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.RedisSessionInterface.open">
+<code class="descname">open</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a session onto the request. Restores the client&#8217;s session
+from Redis if one exists.The session data will be available on
+<cite>request.session</cite>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The request, which a sessionwill be opened onto.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>dict:</dt>
+<dd>the client&#8217;s session data,
+attached as well to <cite>request.session</cite>.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sanic_session.RedisSessionInterface.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>request</em>, <em>response</em><span class="sig-paren">)</span> &rarr; None<a class="headerlink" href="#sanic_session.RedisSessionInterface.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the session into Redis and returns appropriate cookies.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>request (sanic.request.Request):</dt>
+<dd>The sanic request which has an attached session.</dd>
+<dt>response (sanic.response.Response):</dt>
+<dd>The Sanic response. Cookies with the appropriate expiration
+will be added onto this response.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">sanic_session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_the_interfaces.html">Using the interfaces</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#inmemorysessioninterface">InMemorySessionInterface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memcachesessioninterface">MemcacheSessionInterface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#redissessioninterface">RedisSessionInterface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="using_the_interfaces.html" title="previous chapter">Using the interfaces</a></li>
+      <li>Next: <a href="configuration.html" title="next chapter">Configuration</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Suby Raman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

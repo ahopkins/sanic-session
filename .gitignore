@@ -1,0 +1,5 @@
+.env
+*sublime*
+*.egg*
+.cache
+__pycache__

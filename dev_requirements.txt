@@ -1,0 +1,6 @@
+aiohttp
+pytest
+pytest-asyncio
+pytest-mock
+sphinx
+sphinxcontrib-fulltoc
