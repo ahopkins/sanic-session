@@ -15,11 +15,9 @@ _missing = _Missing()
 
 class UpdateDictMixin(object):
 
-    """Makes dicts call `self.on_update` on modifications.
-
-    .. versionadded:: 0.5
-
-    :private:
+    """
+    Copyright (c) 2015 by Armin Ronacher and contributors.  See AUTHORS
+    in FLASK_LICENSE for more details.
     """
 
     on_update = None
@@ -62,6 +60,10 @@ class CallbackDict(UpdateDictMixin, dict):
 
     """A dict that calls a function passed every time something is changed.
     The function is passed the dict instance.
+
+    Copyright (c) 2015 by Armin Ronacher and contributors.  See AUTHORS
+    in FLASK_LICENSE for more details.
+
     """
 
     def __init__(self, initial=None, on_update=None):
