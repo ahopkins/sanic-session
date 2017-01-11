@@ -53,4 +53,4 @@ A simple example uses the in-memory session interface.
         app.run(host="0.0.0.0", port=8000, debug=True)
 ```
 
-Examples of using redis and memcache backed sessions can be found in the examples folder, as well as in the documentation.
+Examples of using redis and memcache backed sessions can be found in the documentation, under Using the Interfaces.
