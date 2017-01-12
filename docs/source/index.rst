@@ -17,6 +17,8 @@ sanic_session
 
 sanic_session is an extension for sanic that integrates server-backed sessions with a Flask-like API. 
 
+Install it with pip: :code:`pip install sanic_session`
+
 sanic_session provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
 
 * Redis

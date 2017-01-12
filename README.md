@@ -8,6 +8,12 @@ sanic_session provides a number of *session interfaces* for you to store a clien
 * Memcache
 * In-Memory (suitable for testing and development environments)
 
+## Installation
+
+Install with `pip`:
+
+`pip install sanic_session`
+
 ## Documentation
 
 Documentation is available at [PythonHosted](https://pythonhosted.org/sanic_session/).
