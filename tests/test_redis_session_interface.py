@@ -148,7 +148,6 @@ async def test_should_attach_session_to_request(mock_redis, mock_dict):
 
     session_interface = RedisSessionInterface(
         redis_getter,
-        redis_connection,
         cookie_name=COOKIE_NAME)
     session = await session_interface.open(request)
 
