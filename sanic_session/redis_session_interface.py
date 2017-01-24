@@ -90,7 +90,7 @@ class RedisSessionInterface(BaseSessionInterface):
 
         if not request['session']:
             await redis_connection.delete(
-                self.prefix + request['session'].sid)
+                [self.prefix + request['session'].sid])
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
