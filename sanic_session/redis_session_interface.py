@@ -14,7 +14,7 @@ class RedisSessionInterface(BaseSessionInterface):
                 Coroutine which should return an asyncio_redis connection pool
                 (suggested) or an asyncio_redis Redis connection.
         """
-        kw = {k: kwargs.pop(k) for k in list(kwargs.keys())
+        kw = {k.split('_', 1)[1]: kwargs.pop(k) for k in list(kwargs.keys())
               if k.startswith('redis_')}
 
         super().__init__(**kwargs)
@@ -23,7 +23,7 @@ class RedisSessionInterface(BaseSessionInterface):
     def get_default_redis_getter(self, **kwargs):
         import asyncio_redis
         hiredis_ok = True
-        if kwargs.pop('redis_protocol', 'hiredis') == 'hiredis':
+        if kwargs.pop('protocol', 'hiredis') == 'hiredis':
             try:
                 from asyncio_redis import HiRedisProtocol as RedisProtocol
             except ImportError:
@@ -32,16 +32,14 @@ class RedisSessionInterface(BaseSessionInterface):
         if not hiredis_ok:
             from asyncio_redis import RedisProtocol
 
+        kwargs.update(protocol_class=RedisProtocol)
+
         class Redis:
             _pool = None
 
             async def get_redis_pool(self):
                 if not self._pool:
-                    kw = dict(host=kwargs.get('redis_host', 'localhost'),
-                              port=kwargs.get('redis_port', 6379),
-                              poolsize=kwargs.get('redis_poolsize', 10),
-                              protocol_class=RedisProtocol)
-                    self._pool = await asyncio_redis.Pool.create(**kw)
+                    self._pool = await asyncio_redis.Pool.create(**kwargs)
 
                 return self._pool
 
