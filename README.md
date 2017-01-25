@@ -6,7 +6,7 @@ sanic_session provides a number of *session interfaces* for you to store a clien
 
 * Redis
 * Memcache
-* In-Memory (suitable for testing and development environments)
+* In-Memory (suitable for testing and development environments, and is the default backend)
 
 ## Installation
 
@@ -26,13 +26,13 @@ A simple example uses the in-memory session interface.
 ```python
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import ISessionInterface
+    from sanic_session import SessionInterface
 
 
     app = Sanic()
-    session_interface = SessionInterface(app=app, backed='memory')
+    session_interface = SessionInterface(app=app)
     # or setup later
-    # session_interface = SessionInterface(backend='memory')
+    # session_interface = SessionInterface()
     # session_interface.init_app(app)
 
 
