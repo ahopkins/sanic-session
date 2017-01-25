@@ -10,8 +10,8 @@ class SessionInterface:
     def __new__(cls, *args, **kwargs):
         backend = kwargs.pop('backend', 'memory')
         if backend == 'redis':
-            return RedisSessionInterface(args[0], **kwargs)
+            return RedisSessionInterface(*args, **kwargs)
         elif backend == 'memcache':
-            return MemcacheSessionInterface(args[0], **kwargs)
+            return MemcacheSessionInterface(*args, **kwargs)
         else:
             return InMemorySessionInterface(**kwargs)
