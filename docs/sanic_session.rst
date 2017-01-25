@@ -4,6 +4,14 @@ sanic_session package
 Submodules
 ----------
 
+sanic_session module
+-------------------------
+
+.. automodule:: sanic_session.SessionInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 sanic_session.base module
 -------------------------
 

@@ -160,7 +160,7 @@ texinfo_documents = [
 
 
 def skip(app, what, name, obj, skip, options):
-    if name == "__init__":
+    if name in ("__init__", '__new__'):
         return False
     return skip
 

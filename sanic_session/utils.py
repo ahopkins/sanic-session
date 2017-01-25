@@ -112,7 +112,7 @@ class ExpiringDict(dict):
             del self[key]
         except:
             pass
-        
+
         try:
             del self.expiry_times[key]
         except:

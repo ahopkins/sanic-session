@@ -1,6 +1,6 @@
 ### sanic_session
 
-sanic_session is an extension for sanic that integrates server-backed sessions with a Flask-like API. 
+sanic_session is an extension for sanic that integrates server-backed sessions with a Flask-like API.
 
 sanic_session provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
 
@@ -26,24 +26,15 @@ A simple example uses the in-memory session interface.
 ```python
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import InMemorySessionInterface
+    from sanic_session import ISessionInterface
 
 
     app = Sanic()
-    session_interface = InMemorySessionInterface()
+    session_interface = SessionInterface(app=app, backed='memory')
+    # or setup later
+    # session_interface = SessionInterface(backend='memory')
+    # session_interface.init_app(app)
 
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
 
     @app.route("/")
     async def index(request):

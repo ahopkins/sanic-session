@@ -45,14 +45,27 @@
             
   <div class="section" id="api-documentation">
 <span id="api"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sessioninterface">
+<h2>SessionInterface<a class="headerlink" href="#sessioninterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sanic_session.SessionInterface">
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">SessionInterface</code><a class="headerlink" href="#sanic_session.SessionInterface" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="sanic_session.SessionInterface.__new__">
+<em class="property">static </em><code class="descname">__new__</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.SessionInterface.__new__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="inmemorysessioninterface">
 <h2>InMemorySessionInterface<a class="headerlink" href="#inmemorysessioninterface" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="sanic_session.InMemorySessionInterface">
-<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">InMemorySessionInterface</code><span class="sig-paren">(</span><em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">InMemorySessionInterface</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="sanic_session.InMemorySessionInterface.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.InMemorySessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -104,10 +117,10 @@ will be added onto this response.</dd>
 <h2>MemcacheSessionInterface<a class="headerlink" href="#memcachesessioninterface" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="sanic_session.MemcacheSessionInterface">
-<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">MemcacheSessionInterface</code><span class="sig-paren">(</span><em>memcache_connection</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">MemcacheSessionInterface</code><span class="sig-paren">(</span><em>memcache_connection</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="sanic_session.MemcacheSessionInterface.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>memcache_connection</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>memcache_connection</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.MemcacheSessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes the interface for storing client sessions in memcache.
 Requires a client object establised with <cite>asyncio_memcache</cite>.</p>
 <dl class="docutils">
@@ -115,17 +128,6 @@ Requires a client object establised with <cite>asyncio_memcache</cite>.</p>
 <dd><dl class="first last docutils">
 <dt>memcache_connection (aiomccache.Client):</dt>
 <dd>The memcache client used for interfacing with memcache.</dd>
-<dt>domain (str, optional):</dt>
-<dd>Optional domain which will be attached to the cookie.</dd>
-<dt>expiry (int, optional):</dt>
-<dd>Seconds until the session should expire.</dd>
-<dt>httponly (bool, optional):</dt>
-<dd>Adds the <cite>httponly</cite> flag to the session cookie.</dd>
-<dt>cookie_name (str, optional):</dt>
-<dd>Name used for the client cookie.</dd>
-<dt>prefix (str, optional):</dt>
-<dd>Memcache keys will take the format of <cite>prefix+session_id</cite>;
-specify the prefix here.</dd>
 </dl>
 </dd>
 </dl>
@@ -180,10 +182,10 @@ will be added onto this response.</dd>
 <h2>RedisSessionInterface<a class="headerlink" href="#redissessioninterface" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="sanic_session.RedisSessionInterface">
-<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">RedisSessionInterface</code><span class="sig-paren">(</span><em>redis_getter: typing.Callable</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">sanic_session.</code><code class="descname">RedisSessionInterface</code><span class="sig-paren">(</span><em>redis_getter: typing.Callable</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="sanic_session.RedisSessionInterface.__init__">
-<code class="descname">__init__</code><span class="sig-paren">(</span><em>redis_getter: typing.Callable</em>, <em>domain: str = None</em>, <em>expiry: int = 2592000</em>, <em>httponly: bool = True</em>, <em>cookie_name: str = 'session'</em>, <em>prefix: str = 'session:'</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>redis_getter: typing.Callable</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#sanic_session.RedisSessionInterface.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a session interface backed by Redis.</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -191,17 +193,6 @@ will be added onto this response.</dd>
 <dt>redis_getter (Callable):</dt>
 <dd>Coroutine which should return an asyncio_redis connection pool
 (suggested) or an asyncio_redis Redis connection.</dd>
-<dt>domain (str, optional):</dt>
-<dd>Optional domain which will be attached to the cookie.</dd>
-<dt>expiry (int, optional):</dt>
-<dd>Seconds until the session should expire.</dd>
-<dt>httponly (bool, optional):</dt>
-<dd>Adds the <cite>httponly</cite> flag to the session cookie.</dd>
-<dt>cookie_name (str, optional):</dt>
-<dd>Name used for the client cookie.</dd>
-<dt>prefix (str, optional):</dt>
-<dd>Memcache keys will take the format of <cite>prefix+session_id</cite>;
-specify the prefix here.</dd>
 </dl>
 </dd>
 </dl>
@@ -265,6 +256,7 @@ will be added onto this response.</dd>
 <li class="toctree-l1"><a class="reference internal" href="index.html">sanic_session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="using_the_interfaces.html">Using the interfaces</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sessioninterface">SessionInterface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#inmemorysessioninterface">InMemorySessionInterface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#memcachesessioninterface">MemcacheSessionInterface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#redissessioninterface">RedisSessionInterface</a></li>
@@ -307,7 +299,7 @@ will be added onto this response.</dd>
       &copy;2017, Suby Raman.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |

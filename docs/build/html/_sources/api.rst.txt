@@ -3,6 +3,12 @@
 API Documentation
 =====================
 
+SessionInterface
+------------------------------------------------
+
+.. autoclass:: sanic_session.SessionInterface
+    :members:
+
 InMemorySessionInterface
 ------------------------------------------------
 

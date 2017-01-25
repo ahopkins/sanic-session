@@ -1,5 +1,5 @@
 from sanic.response import text
-from sanic_session.redis_session_interface import RedisSessionInterface
+from sanic_session import SessionInterface
 import pytest
 import uuid
 import json
@@ -43,9 +43,8 @@ async def get_interface_and_request(mocker, redis_getter, data=None):
     redis_connection.get = mock_coroutine(json.dumps(data))
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
     await session_interface.open(request)
 
     return session_interface, request
@@ -61,7 +60,7 @@ async def test_redis_should_create_new_sid_if_no_cookie(
     redis_getter = mock_coroutine(redis_connection)
 
     mocker.spy(uuid, 'uuid4')
-    session_interface = RedisSessionInterface(redis_getter)
+    session_interface = SessionInterface(redis_getter, backend='redis')
     await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 1, 'should create a new SID with uuid'
@@ -81,16 +80,14 @@ async def test_should_return_data_from_redis(mocker, mock_dict, mock_redis):
     redis_connection.get = mock_coroutine(json.dumps(data))
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
     session = await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 0, 'should not create a new SID'
     assert redis_connection.get.call_count == 1, 'should call on redis once'
-    assert(
-        redis_connection.get.call_args_list[0][0][0] ==
-        'session:{}'.format(SID), 'should call redis with prefix + SID')
+    assert redis_connection.get.call_args_list[0][0][0] == \
+        'session:{}'.format(SID), 'should call redis with prefix + SID'
     assert session.get('foo') == 'bar', 'session data is pulled from redis'
 
 
@@ -106,15 +103,13 @@ async def test_should_use_prefix_in_redis_key(mocker, mock_dict, mock_redis):
     redis_connection.get = mock_coroutine(json.dumps(data))
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME,
-        prefix=prefix)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME,
+                                         prefix=prefix)
     await session_interface.open(request)
 
-    assert(
-        redis_connection.get.call_args_list[0][0][0] ==
-        '{}{}'.format(prefix, SID), 'should call redis with prefix + SID')
+    assert redis_connection.get.call_args_list[0][0][0] == \
+        '{}{}'.format(prefix, SID), 'should call redis with prefix + SID'
 
 
 @pytest.mark.asyncio
@@ -128,10 +123,9 @@ async def test_should_use_return_empty_session_via_redis(
     redis_connection.get = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME,
-        prefix=prefix)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME,
+                                         prefix=prefix)
     session = await session_interface.open(request)
 
     assert session == {}
@@ -146,9 +140,8 @@ async def test_should_attach_session_to_request(mock_redis, mock_dict):
     redis_connection.get = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
     session = await session_interface.open(request)
 
     assert session == request['session']
@@ -166,17 +159,15 @@ async def test_should_delete_session_from_redis(mocker, mock_redis, mock_dict):
     redis_connection.delete = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
 
     await session_interface.open(request)
     await session_interface.save(request, response)
 
     assert redis_connection.delete.call_count == 1
-    assert(
-        redis_connection.delete.call_args_list[0][0][0] ==
-        'session:{}'.format(SID))
+    assert redis_connection.delete.call_args_list[0][0][0][0] == \
+        'session:{}'.format(SID)
     assert response.cookies == {}, 'should not change response cookies'
 
 
@@ -191,9 +182,8 @@ async def test_should_expire_redis_cookies_if_modified(mock_dict, mock_redis):
     redis_connection.delete = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
 
     await session_interface.open(request)
 
@@ -213,9 +203,8 @@ async def test_should_save_in_redis_for_time_specified(mock_dict, mock_redis):
     redis_getter = mock_coroutine(redis_connection)
     response = text('foo')
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
 
     await session_interface.open(request)
 
@@ -237,9 +226,8 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_redis):
     redis_getter = mock_coroutine(redis_connection)
     response = text('foo')
 
-    session_interface = RedisSessionInterface(
-        redis_getter,
-        cookie_name=COOKIE_NAME)
+    session_interface = SessionInterface(redis_getter, backend='redis',
+                                         cookie_name=COOKIE_NAME)
 
     await session_interface.open(request)
     request['session']['foo'] = 'baz'
