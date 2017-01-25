@@ -5,15 +5,8 @@ import uuid
 
 
 class InMemorySessionInterface(BaseSessionInterface):
-    def __init__(
-            self, domain: str=None, expiry: int = 2592000,
-            httponly: bool=True, cookie_name: str = 'session',
-            prefix: str='session:'):
-        self.expiry = expiry
-        self.prefix = prefix
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = httponly
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.session_store = ExpiringDict()
 
     async def open(self, request) -> SessionDict:

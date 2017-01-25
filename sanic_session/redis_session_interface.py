@@ -6,35 +6,44 @@ from typing import Callable
 
 
 class RedisSessionInterface(BaseSessionInterface):
-    def __init__(
-            self, redis_getter: Callable,
-            domain: str=None, expiry: int = 2592000,
-            httponly: bool=True, cookie_name: str='session',
-            prefix: str='session:'):
+    def __init__(self, redis_getter: Callable=None, **kwargs):
         """Initializes a session interface backed by Redis.
 
         Args:
             redis_getter (Callable):
                 Coroutine which should return an asyncio_redis connection pool
                 (suggested) or an asyncio_redis Redis connection.
-            domain (str, optional):
-                Optional domain which will be attached to the cookie.
-            expiry (int, optional):
-                Seconds until the session should expire.
-            httponly (bool, optional):
-                Adds the `httponly` flag to the session cookie.
-            cookie_name (str, optional):
-                Name used for the client cookie.
-            prefix (str, optional):
-                Memcache keys will take the format of `prefix+session_id`;
-                specify the prefix here.
         """
-        self.redis_getter = redis_getter
-        self.expiry = expiry
-        self.prefix = prefix
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = httponly
+        kw = {k.split('_', 1)[1]: kwargs.pop(k) for k in list(kwargs.keys())
+              if k.startswith('redis_')}
+
+        super().__init__(**kwargs)
+        self.redis_getter = redis_getter or self.get_default_redis_getter(**kw)
+
+    def get_default_redis_getter(self, **kwargs):
+        import asyncio_redis
+        hiredis_ok = True
+        if kwargs.pop('protocol', 'hiredis') == 'hiredis':
+            try:
+                from asyncio_redis import HiRedisProtocol as RedisProtocol
+            except ImportError:
+                hiredis_ok = False
+
+        if not hiredis_ok:
+            from asyncio_redis import RedisProtocol
+
+        kwargs.update(protocol_class=RedisProtocol)
+
+        class Redis:
+            _pool = None
+
+            async def get_redis_pool(self):
+                if not self._pool:
+                    self._pool = await asyncio_redis.Pool.create(**kwargs)
+
+                return self._pool
+
+        return Redis().get_redis_pool
 
     async def open(self, request):
         """Opens a session onto the request. Restores the client's session
@@ -90,7 +99,7 @@ class RedisSessionInterface(BaseSessionInterface):
 
         if not request['session']:
             await redis_connection.delete(
-                self.prefix + request['session'].sid)
+                [self.prefix + request['session'].sid])
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
@@ -103,3 +112,7 @@ class RedisSessionInterface(BaseSessionInterface):
             self.prefix + request['session'].sid, self.expiry, val)
 
         self._set_cookie_expiration(request, response)
+
+    async def close(self, *args, **kwargs):
+        redis_connection = await self.redis_getter()
+        redis_connection.close()

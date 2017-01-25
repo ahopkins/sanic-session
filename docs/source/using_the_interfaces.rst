@@ -17,7 +17,7 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
 
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import RedisSessionInterface
+    from sanic_session import SessionInterface
 
 
     app = Sanic()
@@ -42,21 +42,11 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
     redis = Redis()
 
     # pass the getter method for the connection pool into the session
-    session_interface = RedisSessionInterface(redis.get_redis_pool)
-
-
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
+    session_interface = SessionInterface(redis.get_redis_pool, app=app,
+                                         backend='redis')
+    # or setup later
+    # session_interface = SessionInterface(redis.get_redis_pool, #                                      backend='redis')
+    # session_interface.init_app(app)
 
 
     @app.route("/")
@@ -90,7 +80,7 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
 
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import MemcacheSessionInterface
+    from sanic_session import SessionInterface
 
     app = Sanic()
 
@@ -101,21 +91,10 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
     client = aiomcache.Client("127.0.0.1", 11211, loop=loop)
 
     # pass the memcache client into the session
-    session_interface = MemcacheSessionInterface(client)
-
-
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
+    session_interface = SessionInterface(client, app=app, backend='memcache')
+    # or setup later
+    # session_interface = SessionInterface(client, backend='memcache')
+    # session_interface.init_app(app)
 
 
     @app.route("/")
@@ -136,30 +115,21 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
 In-Memory
 -----------------
 
-:code:`sanic_session` comes with an in-memory interface which stores sessions in a Python dictionary available at :code:`session_interface.session_store`. This interface is meant for testing and development purposes only. **This interface is not suitable for production**.
+:code:`sanic_session` comes with an in-memory interface which stores sessions in a Python dictionary available at :code:`session_interface.session_store`. This interface is meant for testing and development purposes only and **is the default backend**. **This interface is not suitable for production**.
 
 .. code-block:: python
 
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import InMemorySessionInterface
+    from sanic_session import SessionInterface
 
 
     app = Sanic()
-    session_interface = InMemorySessionInterface()
+    session_interface = SessionInterface(app=app)
+    # or setup later
+    # session_interface = SessionInterface()
+    # session_interface.init_app(app)
 
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
 
     @app.route("/")
     async def index(request):

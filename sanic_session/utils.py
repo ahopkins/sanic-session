@@ -108,5 +108,12 @@ class ExpiringDict(dict):
         return data
 
     def delete(self, key: Union[str, int]):
-        del self[key]
-        del self.expiry_times[key]
+        try:
+            del self[key]
+        except:
+            pass
+
+        try:
+            del self.expiry_times[key]
+        except:
+            pass
