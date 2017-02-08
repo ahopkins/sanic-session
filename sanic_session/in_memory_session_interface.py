@@ -65,8 +65,9 @@ class InMemorySessionInterface(BaseSessionInterface):
             return
 
         if not request['session']:
-            self.session_store.delete(
-                self.prefix + request['session'].sid)
+            if self.prefix + request['session'].sid in self.session_store:
+                self.session_store.delete(
+                    self.prefix + request['session'].sid)
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
