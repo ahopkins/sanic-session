@@ -60,3 +60,6 @@ A simple example uses the in-memory session interface.
 ```
 
 Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](https://pythonhosted.org/sanic_session/using_the_interfaces.html).
+
+TODO:
+    - Session handling with Motor/MongoDB
