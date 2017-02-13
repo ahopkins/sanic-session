@@ -48,12 +48,12 @@ async def test_should_return_data_from_session_store(mocker, mock_dict):
     session = await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 0, 'should not create a new SID'
-    assert (
-        session_interface.session_store.get.call_count == 1,
-        'should call on redis once')
-    assert(
-        session_interface.session_store.get.call_args_list[0][0][0] ==
-        'session:{}'.format(SID), 'should get from store with prefix + SID')
+    assert session_interface.session_store.get.call_count == 1, \
+        'should call on redis once'
+
+    assert session_interface.session_store.get.call_args_list[0][0][0] == \
+        'session:{}'.format(SID), 'should get from store with prefix + SID'
+
     assert session.get('foo') == 'bar', 'session data is pulled from store'
 
 
@@ -72,9 +72,8 @@ async def test_should_use_prefix_in_store_key(mocker, mock_dict):
         return_value=json.dumps(data))
     await session_interface.open(request)
 
-    assert(
-        session_interface.session_store.get.call_args_list[0][0][0] ==
-        '{}{}'.format(prefix, SID), 'should call redis with prefix + SID')
+    assert session_interface.session_store.get.call_args_list[0][0][0] == \
+        '{}{}'.format(prefix, SID), 'should call redis with prefix + SID'
 
 
 @pytest.mark.asyncio
@@ -118,6 +117,7 @@ async def test_should_delete_session_from_store(mocker, mock_dict):
 
     session_interface = InMemorySessionInterface(
         cookie_name=COOKIE_NAME)
+    session_interface.session_store['session:{}'.format(SID)] = '{foo:1}'
     session_interface.session_store.get = mocker.MagicMock(return_value=None)
     session_interface.session_store.delete = mocker.MagicMock()
     await session_interface.open(request)
@@ -128,9 +128,8 @@ async def test_should_delete_session_from_store(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert session_interface.session_store.delete.call_count == 1
-    assert(
-        session_interface.session_store.delete.call_args_list[0][0][0] ==
-        'session:{}'.format(SID))
+    assert session_interface.session_store.delete.call_args_list[0][0][0] == \
+        'session:{}'.format(SID)
     assert response.cookies == {}, 'should not change response cookies'
 
 

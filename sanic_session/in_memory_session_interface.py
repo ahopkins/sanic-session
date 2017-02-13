@@ -64,9 +64,10 @@ class InMemorySessionInterface(BaseSessionInterface):
         if 'session' not in request:
             return
 
+        key = self.prefix + request['session'].sid
         if not request['session']:
-            self.session_store.delete(
-                self.prefix + request['session'].sid)
+            if key in self.session_store:
+                self.session_store.delete(key)
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
@@ -76,7 +77,7 @@ class InMemorySessionInterface(BaseSessionInterface):
         val = json.dumps(dict(request['session']))
 
         self.session_store.set(
-            self.prefix + request['session'].sid, val,
+            key, val,
             self.expiry)
 
         self._set_cookie_expiration(request, response)

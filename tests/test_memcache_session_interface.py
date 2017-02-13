@@ -67,7 +67,8 @@ async def test_memcache_should_create_new_sid_if_no_cookie(
 
 
 @pytest.mark.asyncio
-async def test_should_return_data_from_memcache(mocker, mock_dict, mock_memcache):
+async def test_should_return_data_from_memcache(
+        mocker, mock_dict, mock_memcache):
     request = mock_dict()
 
     request.cookies = COOKIES
@@ -84,16 +85,17 @@ async def test_should_return_data_from_memcache(mocker, mock_dict, mock_memcache
     session = await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 0, 'should not create a new SID'
-    assert memcache_connection.get.call_count == 1, 'should call on memcache once'
-    assert(
-        memcache_connection.get.call_args_list[0][0][0] ==
-        'session:{}'.format(SID).encode(),
-        'should call memcache with prefix + SID')
+    assert memcache_connection.get.call_count == 1,\
+        'should call on memcache once'
+    assert memcache_connection.get.call_args_list[0][0][0] == \
+        'session:{}'.format(SID).encode(), \
+        'should call memcache with prefix + SID'
     assert session.get('foo') == 'bar', 'session data is pulled from memcache'
 
 
 @pytest.mark.asyncio
-async def test_should_use_prefix_in_memcache_key(mocker, mock_dict, mock_memcache):
+async def test_should_use_prefix_in_memcache_key(
+        mocker, mock_dict, mock_memcache):
     request = mock_dict()
     prefix = 'differentprefix:'
     data = {'foo': 'bar'}
@@ -109,10 +111,9 @@ async def test_should_use_prefix_in_memcache_key(mocker, mock_dict, mock_memcach
         prefix=prefix)
     await session_interface.open(request)
 
-    assert(
-        memcache_connection.get.call_args_list[0][0][0] ==
-        '{}{}'.format(prefix, SID).encode(),
-        'should call memcache with prefix + SID')
+    assert memcache_connection.get.call_args_list[0][0][0] == \
+        '{}{}'.format(prefix, SID).encode(), \
+        'should call memcache with prefix + SID'
 
 
 @pytest.mark.asyncio

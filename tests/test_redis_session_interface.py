@@ -88,9 +88,8 @@ async def test_should_return_data_from_redis(mocker, mock_dict, mock_redis):
 
     assert uuid.uuid4.call_count == 0, 'should not create a new SID'
     assert redis_connection.get.call_count == 1, 'should call on redis once'
-    assert(
-        redis_connection.get.call_args_list[0][0][0] ==
-        'session:{}'.format(SID), 'should call redis with prefix + SID')
+    assert redis_connection.get.call_args_list[0][0][0] == \
+        'session:{}'.format(SID), 'should call redis with prefix + SID'
     assert session.get('foo') == 'bar', 'session data is pulled from redis'
 
 
@@ -112,9 +111,8 @@ async def test_should_use_prefix_in_redis_key(mocker, mock_dict, mock_redis):
         prefix=prefix)
     await session_interface.open(request)
 
-    assert(
-        redis_connection.get.call_args_list[0][0][0] ==
-        '{}{}'.format(prefix, SID), 'should call redis with prefix + SID')
+    assert redis_connection.get.call_args_list[0][0][0] == \
+        '{}{}'.format(prefix, SID), 'should call redis with prefix + SID'
 
 
 @pytest.mark.asyncio
