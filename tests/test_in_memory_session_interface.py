@@ -2,7 +2,7 @@ from sanic.response import text
 from sanic_session.in_memory_session_interface import InMemorySessionInterface
 import pytest
 import uuid
-import json
+import ujson
 
 
 SID = '5235262626'
@@ -43,7 +43,7 @@ async def test_should_return_data_from_session_store(mocker, mock_dict):
     session_interface = InMemorySessionInterface(
         cookie_name=COOKIE_NAME)
     session_interface.session_store.get = mocker.MagicMock(
-        return_value=json.dumps(data))
+        return_value=ujson.dumps(data))
 
     session = await session_interface.open(request)
 
@@ -69,7 +69,7 @@ async def test_should_use_prefix_in_store_key(mocker, mock_dict):
         cookie_name=COOKIE_NAME,
         prefix=prefix)
     session_interface.session_store.get = mocker.MagicMock(
-        return_value=json.dumps(data))
+        return_value=ujson.dumps(data))
     await session_interface.open(request)
 
     assert session_interface.session_store.get.call_args_list[0][0][0] == \
@@ -141,7 +141,7 @@ async def test_should_expire_cookies_if_modified(mock_dict, mocker):
     session_interface = InMemorySessionInterface(
         cookie_name=COOKIE_NAME)
     session_interface.session_store.get = mocker.MagicMock(
-        return_value=json.dumps({'foo': 'bar'}))
+        return_value=ujson.dumps({'foo': 'bar'}))
     session_interface.session_store.delete = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -161,7 +161,7 @@ async def test_should_save_in_memory_for_time_specified(mock_dict, mocker):
     session_interface = InMemorySessionInterface(
         cookie_name=COOKIE_NAME)
     session_interface.session_store.get = mocker.MagicMock(
-        return_value=json.dumps({'foo': 'bar'}))
+        return_value=ujson.dumps({'foo': 'bar'}))
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -170,7 +170,7 @@ async def test_should_save_in_memory_for_time_specified(mock_dict, mocker):
     await session_interface.save(request, response)
 
     session_interface.session_store.set.assert_called_with(
-        'session:{}'.format(SID), json.dumps(request['session']), 2592000)
+        'session:{}'.format(SID), ujson.dumps(request['session']), 2592000)
 
 
 @pytest.mark.asyncio
@@ -183,7 +183,7 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
     session_interface = InMemorySessionInterface(
         cookie_name=COOKIE_NAME)
     session_interface.session_store.get = mocker.MagicMock(
-        return_value=json.dumps({'foo': 'bar'}))
+        return_value=ujson.dumps({'foo': 'bar'}))
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)

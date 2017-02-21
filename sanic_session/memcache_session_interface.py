@@ -1,4 +1,4 @@
-import json
+import ujson
 from sanic_session.base import BaseSessionInterface, SessionDict
 import uuid
 
@@ -64,7 +64,7 @@ class MemcacheSessionInterface(BaseSessionInterface):
             val = await self.memcache_connection.get(key)
 
             if val is not None:
-                data = json.loads(val.decode())
+                data = ujson.loads(val.decode())
                 session_dict = SessionDict(data, sid=sid)
             else:
                 session_dict = SessionDict(sid=sid)
@@ -99,7 +99,7 @@ class MemcacheSessionInterface(BaseSessionInterface):
 
             return
 
-        val = json.dumps(dict(request['session'])).encode()
+        val = ujson.dumps(dict(request['session'])).encode()
 
         await self.memcache_connection.set(
             key, val,

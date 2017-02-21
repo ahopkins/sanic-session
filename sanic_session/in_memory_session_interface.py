@@ -1,4 +1,4 @@
-import json
+import ujson
 from sanic_session.base import BaseSessionInterface, SessionDict
 from sanic_session.utils import ExpiringDict
 import uuid
@@ -40,7 +40,7 @@ class InMemorySessionInterface(BaseSessionInterface):
             val = self.session_store.get(self.prefix + sid)
 
             if val is not None:
-                data = json.loads(val)
+                data = ujson.loads(val)
                 session_dict = SessionDict(data, sid=sid)
             else:
                 session_dict = SessionDict(sid=sid)
@@ -74,7 +74,7 @@ class InMemorySessionInterface(BaseSessionInterface):
 
             return
 
-        val = json.dumps(dict(request['session']))
+        val = ujson.dumps(dict(request['session']))
 
         self.session_store.set(
             key, val,
@@ -87,4 +87,4 @@ class InMemorySessionInterface(BaseSessionInterface):
         val = self.session_store.get(key)
 
         if val:
-            return SessionDict(json.loads(val), sid=sid)
+            return SessionDict(ujson.loads(val), sid=sid)

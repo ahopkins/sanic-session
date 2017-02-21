@@ -8,14 +8,14 @@ except:
 
 setup(
     name='sanic_session',
-    version='0.1.0',
+    version='0.1.2',
     description='Provides server-backed sessions for Sanic using Redis, Memcache and more.',
     long_description=long_description,
     url='http://github.com/subyraman/sanic_session',
     author='Suby Raman',
     license='MIT',
     packages=['sanic_session'],
-    install_requires=('sanic'),
+    install_requires=('sanic', 'ujson'),
     zip_safe=False,
     keywords=['sessions', 'sanic', 'redis', 'memcache'],
     classifiers=[

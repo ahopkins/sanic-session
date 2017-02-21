@@ -2,7 +2,7 @@ from sanic.response import text
 from sanic_session.memcache_session_interface import MemcacheSessionInterface
 import pytest
 import uuid
-import json
+import ujson
 
 from unittest.mock import Mock
 
@@ -40,7 +40,7 @@ async def get_interface_and_request(mocker, memcache_connection, data=None):
     data = data or {}
 
     memcache_connection = mock_memcache()
-    memcache_connection.get = mock_coroutine(json.dumps(data))
+    memcache_connection.get = mock_coroutine(ujson.dumps(data))
 
     session_interface = MemcacheSessionInterface(
         memcache_connection,
@@ -77,7 +77,7 @@ async def test_should_return_data_from_memcache(
     data = {'foo': 'bar'}
 
     memcache_connection = mock_memcache()
-    memcache_connection.get = mock_coroutine(json.dumps(data).encode())
+    memcache_connection.get = mock_coroutine(ujson.dumps(data).encode())
 
     session_interface = MemcacheSessionInterface(
         memcache_connection,
@@ -103,7 +103,7 @@ async def test_should_use_prefix_in_memcache_key(
     request.cookies = COOKIES
 
     memcache_connection = mock_memcache
-    memcache_connection.get = mock_coroutine(json.dumps(data).encode())
+    memcache_connection.get = mock_coroutine(ujson.dumps(data).encode())
 
     session_interface = MemcacheSessionInterface(
         memcache_connection,
@@ -204,7 +204,7 @@ async def test_should_save_in_memcache_for_time_specified(mock_dict, mock_memcac
     request.cookies = COOKIES
     memcache_connection = mock_memcache
     memcache_connection.get = mock_coroutine(
-        json.dumps({'foo': 'bar'}).encode())
+        ujson.dumps({'foo': 'bar'}).encode())
     memcache_connection.set = mock_coroutine()
     response = text('foo')
 
@@ -219,7 +219,7 @@ async def test_should_save_in_memcache_for_time_specified(mock_dict, mock_memcac
 
     memcache_connection.set.assert_called_with(
         'session:{}'.format(SID).encode(),
-        json.dumps(request['session']).encode(), exptime=2592000)
+        ujson.dumps(request['session']).encode(), exptime=2592000)
 
 
 @pytest.mark.asyncio
@@ -228,7 +228,7 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_memcache):
     request.cookies = COOKIES
     memcache_connection = mock_memcache
     memcache_connection.get = mock_coroutine(
-        json.dumps({'foo': 'bar'}).encode())
+        ujson.dumps({'foo': 'bar'}).encode())
     memcache_connection.set = mock_coroutine()
     response = text('foo')
 
