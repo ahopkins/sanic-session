@@ -175,7 +175,7 @@ async def test_should_delete_session_from_redis(mocker, mock_redis, mock_dict):
     assert redis_connection.delete.call_count == 1
     assert(
         redis_connection.delete.call_args_list[0][0][0] ==
-        'session:{}'.format(SID))
+        ['session:{}'.format(SID)])
     assert response.cookies == {}, 'should not change response cookies'
 
 

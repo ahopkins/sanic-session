@@ -51,14 +51,13 @@ class RedisSessionInterface(BaseSessionInterface):
                 the client's session data,
                 attached as well to `request.session`.
         """
-        redis_connection = await self.redis_getter()
-
         sid = request.cookies.get(self.cookie_name)
 
         if not sid:
             sid = uuid.uuid4().hex
             session_dict = SessionDict(sid=sid)
         else:
+            redis_connection = await self.redis_getter()
             val = await redis_connection.get(self.prefix + sid)
 
             if val is not None:
@@ -88,9 +87,9 @@ class RedisSessionInterface(BaseSessionInterface):
         if 'session' not in request:
             return
 
+        key = self.prefix + request['session'].sid
         if not request['session']:
-            await redis_connection.delete(
-                self.prefix + request['session'].sid)
+            await redis_connection.delete([key])
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
@@ -99,7 +98,6 @@ class RedisSessionInterface(BaseSessionInterface):
 
         val = ujson.dumps(dict(request['session']))
 
-        await redis_connection.setex(
-            self.prefix + request['session'].sid, self.expiry, val)
+        await redis_connection.setex(key, self.expiry, val)
 
         self._set_cookie_expiration(request, response)
