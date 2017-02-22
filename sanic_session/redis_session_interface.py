@@ -82,11 +82,10 @@ class RedisSessionInterface(BaseSessionInterface):
         Returns:
             None
         """
-        redis_connection = await self.redis_getter()
-
         if 'session' not in request:
             return
 
+        redis_connection = await self.redis_getter()
         key = self.prefix + request['session'].sid
         if not request['session']:
             await redis_connection.delete([key])
