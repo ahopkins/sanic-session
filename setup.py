@@ -8,7 +8,7 @@ except:
 
 setup(
     name='sanic_session',
-    version='0.1.2',
+    version='0.1.3',
     description='Provides server-backed sessions for Sanic using Redis, Memcache and more.',
     long_description=long_description,
     url='http://github.com/subyraman/sanic_session',
