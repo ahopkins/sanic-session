@@ -1,3 +1,4 @@
+import time
 from sanic.response import text
 from sanic_session.memcache_session_interface import MemcacheSessionInterface
 import pytest
@@ -223,7 +224,7 @@ async def test_should_save_in_memcache_for_time_specified(mock_dict, mock_memcac
 
 
 @pytest.mark.asyncio
-async def test_should_reset_cookie_expiry(mock_dict, mock_memcache):
+async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_memcache):
     request = mock_dict()
     request.cookies = COOKIES
     memcache_connection = mock_memcache
@@ -231,6 +232,8 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_memcache):
         ujson.dumps({'foo': 'bar'}).encode())
     memcache_connection.set = mock_coroutine()
     response = text('foo')
+    mocker.patch("time.time")
+    time.time.return_value = 1488576462.138493
 
     session_interface = MemcacheSessionInterface(
         memcache_connection,
@@ -242,3 +245,4 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_memcache):
 
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
+    assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"

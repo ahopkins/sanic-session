@@ -1,3 +1,4 @@
+import time
 from sanic.response import text
 from sanic_session.in_memory_session_interface import InMemorySessionInterface
 import pytest
@@ -179,6 +180,8 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
 
     request = mock_dict()
     request.cookies = COOKIES
+    mocker.patch("time.time")
+    time.time.return_value = 1488576462.138493
 
     session_interface = InMemorySessionInterface(
         cookie_name=COOKIE_NAME)
@@ -193,3 +196,4 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
 
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
+    assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"
