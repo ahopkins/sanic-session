@@ -1,3 +1,4 @@
+import time
 from sanic.response import text
 from sanic_session.redis_session_interface import RedisSessionInterface
 import pytest
@@ -227,7 +228,7 @@ async def test_should_save_in_redis_for_time_specified(mock_dict, mock_redis):
 
 
 @pytest.mark.asyncio
-async def test_should_reset_cookie_expiry(mock_dict, mock_redis):
+async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_redis):
     request = mock_dict()
     request.cookies = COOKIES
     redis_connection = mock_redis
@@ -235,6 +236,8 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_redis):
     redis_connection.setex = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
     response = text('foo')
+    mocker.patch("time.time")
+    time.time.return_value = 1488576462.138493
 
     session_interface = RedisSessionInterface(
         redis_getter,
@@ -245,4 +248,5 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_redis):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].value == SID
-    assert response.cookies[COOKIE_NAME]['expires'] == 2592000
+    assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
+    assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"
