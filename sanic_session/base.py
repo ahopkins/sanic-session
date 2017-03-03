@@ -1,3 +1,5 @@
+import time
+
 from sanic_session.utils import CallbackDict
 
 
@@ -12,6 +14,11 @@ class SessionDict(CallbackDict):
         self.modified = False
 
 
+def _calculate_expires(expiry):
+    expires = time.time() + expiry
+    return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
+
+
 class BaseSessionInterface:
     def _delete_cookie(self, request, response):
         response.cookies[self.cookie_name] = request['session'].sid
@@ -20,7 +27,8 @@ class BaseSessionInterface:
 
     def _set_cookie_expiration(self, request, response):
         response.cookies[self.cookie_name] = request['session'].sid
-        response.cookies[self.cookie_name]['expires'] = self.expiry
+        response.cookies[self.cookie_name]['expires'] = _calculate_expires(self.expiry)
+        response.cookies[self.cookie_name]['max-age'] = self.expiry
         response.cookies[self.cookie_name]['httponly'] = self.httponly
 
         if self.domain:
