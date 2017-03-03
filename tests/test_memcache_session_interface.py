@@ -241,4 +241,4 @@ async def test_should_reset_cookie_expiry(mock_dict, mock_memcache):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].value == SID
-    assert response.cookies[COOKIE_NAME]['expires'] == 2592000
+    assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
