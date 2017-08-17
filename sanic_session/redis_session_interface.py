@@ -1,8 +1,7 @@
 import ujson
-from sanic_session.base import BaseSessionInterface, SessionDict
-import uuid
-
 from typing import Callable
+from sanic_session.base import BaseSessionInterface, SessionDict
+from sanic_session.utils import default_sid_generator
 
 
 class RedisSessionInterface(BaseSessionInterface):
@@ -10,8 +9,9 @@ class RedisSessionInterface(BaseSessionInterface):
             self, redis_getter: Callable,
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
-            prefix: str='session:'):
+            prefix: str = 'session:', sid_generator: Callable[[], str] = default_sid_generator):
         """Initializes a session interface backed by Redis.
+
 
         Args:
             redis_getter (Callable):
@@ -28,10 +28,14 @@ class RedisSessionInterface(BaseSessionInterface):
             prefix (str, optional):
                 Memcache keys will take the format of `prefix+session_id`;
                 specify the prefix here.
+            sid_generator (callable, optional):
+                A callable method that accepts no parameters and returns
+                a unique session identifier of type str.
         """
         self.redis_getter = redis_getter
         self.expiry = expiry
         self.prefix = prefix
+        self.sid_generator = sid_generator
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = httponly
@@ -54,7 +58,7 @@ class RedisSessionInterface(BaseSessionInterface):
         sid = request.cookies.get(self.cookie_name)
 
         if not sid:
-            sid = uuid.uuid4().hex
+            sid = self.sid_generator()
             session_dict = SessionDict(sid=sid)
         else:
             redis_connection = await self.redis_getter()

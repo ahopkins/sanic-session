@@ -1,5 +1,13 @@
 import time
 from typing import Union, Any
+import uuid
+
+
+def default_sid_generator():
+    """
+    A default method of generating unique session identifiers based on UUID4.
+    """
+    return uuid.uuid4().hex
 
 
 class _Missing(object):

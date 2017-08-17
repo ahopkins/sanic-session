@@ -66,6 +66,25 @@ async def test_memcache_should_create_new_sid_if_no_cookie(
     assert uuid.uuid4.call_count == 1, 'should create a new SID with uuid'
     assert request['session'] == {}, 'should return an empty dict as session'
 
+@pytest.mark.asyncio
+async def test_memcache_custom_sid_generator(
+        mocker, mock_memcache, mock_dict):
+    SID = "c0fe70cbd8ca8b798ceec7392bc3172c"
+
+    def custom_generator():
+        """A dummy SID generation protocol that returns a constant SID for unit testing"""
+        return SID
+
+    request = mock_dict()
+    request.cookies = {}
+    memcache_connection = mock_memcache()
+    memcache_connection.get = mock_coroutine()
+
+    session_interface = MemcacheSessionInterface(memcache_connection, sid_generator=custom_generator)
+    await session_interface.open(request)
+
+    assert request["session"].sid == SID
+
 
 @pytest.mark.asyncio
 async def test_should_return_data_from_memcache(

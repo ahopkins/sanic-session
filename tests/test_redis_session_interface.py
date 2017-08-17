@@ -70,6 +70,27 @@ async def test_redis_should_create_new_sid_if_no_cookie(
 
 
 @pytest.mark.asyncio
+async def test_redis_custom_sid_generator(
+        mocker, mock_redis, mock_dict):
+    SID = "c0fe70cbd8ca8b798ceec7392bc3172c"
+
+    def custom_generator():
+        """A dummy SID generation protocol that returns a constant SID for unit testing"""
+        return SID
+
+    request = mock_dict()
+    request.cookies = {}
+    redis_connection = mock_redis()
+    redis_connection.get = mock_coroutine()
+    redis_getter = mock_coroutine(redis_connection)
+
+    session_interface = RedisSessionInterface(redis_getter, sid_generator=custom_generator)
+    await session_interface.open(request)
+
+    assert request["session"].sid == SID
+
+
+@pytest.mark.asyncio
 async def test_should_return_data_from_redis(mocker, mock_dict, mock_redis):
     request = mock_dict()
 

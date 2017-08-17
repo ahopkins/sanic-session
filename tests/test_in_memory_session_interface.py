@@ -18,7 +18,6 @@ def mock_dict():
 
     return MockDict
 
-
 @pytest.mark.asyncio
 async def test_should_create_new_sid_if_no_cookie(mocker, mock_dict):
     request = mock_dict()
@@ -30,6 +29,23 @@ async def test_should_create_new_sid_if_no_cookie(mocker, mock_dict):
 
     assert uuid.uuid4.call_count == 1, 'should create a new SID with uuid'
     assert request['session'] == {}, 'should return an empty dict as session'
+
+
+@pytest.mark.asyncio
+async def test_custom_sid_generator(mocker, mock_dict):
+    SID = "c0fe70cbd8ca8b798ceec7392bc3172c"
+
+    def custom_generator():
+        """A dummy SID generation protocol that returns a constant SID for unit testing"""
+        return SID
+
+    request = mock_dict()
+    request.cookies = {}
+
+    session_interface = InMemorySessionInterface(sid_generator=custom_generator)
+    await session_interface.open(request)
+
+    assert request["session"].sid == SID
 
 
 @pytest.mark.asyncio
