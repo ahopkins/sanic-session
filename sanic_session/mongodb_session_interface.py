@@ -11,10 +11,8 @@ class SessionModel(BaseModel):
 	__coll__ = 'session'
 
 
-
-
 class MongoDBSessionInterface(BaseSessionInterface):
-	def __init__(
+def __init__(
 			self, app, domain: str=None, db_expiry: int=30*24*60*60,
 			cookie_name: str='session'):
 		self.expiry = 12*30*24*60*60        # 1year in browser
@@ -58,7 +56,7 @@ class MongoDBSessionInterface(BaseSessionInterface):
 		sid = request['session'].sid	
 
 		if not request['session']:
-			await SessionModel.delete_one({'sid': sid})
+			await SessionModel.delete_one({'session:sid': sid})
 			
 			if request['session'].modified:
 				self._delete_cookie(request, response)						
