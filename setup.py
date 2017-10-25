@@ -15,7 +15,7 @@ setup(
     author='Suby Raman',
     license='MIT',
     packages=['sanic_session'],
-    install_requires=('sanic', 'ujson'),
+    install_requires=('sanic', 'sanic_motor', 'ujson'),
     zip_safe=False,
     keywords=['sessions', 'sanic', 'redis', 'memcache'],
     classifiers=[
