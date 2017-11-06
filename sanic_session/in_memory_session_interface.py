@@ -8,13 +8,15 @@ class InMemorySessionInterface(BaseSessionInterface):
     def __init__(
             self, domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str = 'session',
-            prefix: str='session:'):
+            prefix: str='session:',
+            sessioncookie: bool=False):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = httponly
         self.session_store = ExpiringDict()
+        self.sessioncookie = sessioncookie
 
     async def open(self, request) -> SessionDict:
         """Opens an in-memory session onto the request. Restores the client's session

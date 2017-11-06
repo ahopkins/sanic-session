@@ -10,7 +10,8 @@ class RedisSessionInterface(BaseSessionInterface):
             self, redis_getter: Callable,
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
-            prefix: str='session:'):
+            prefix: str='session:',
+            sessioncookie: bool=False):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -28,6 +29,10 @@ class RedisSessionInterface(BaseSessionInterface):
             prefix (str, optional):
                 Memcache keys will take the format of `prefix+session_id`;
                 specify the prefix here.
+            sessioncookie (bool, optional):
+                Specifies if the sent cookie should be a 'session cookie', i.e
+                no Expires or Max-age headers are included. Expiry is still
+                fully tracked on the server side. Default setting is False.
         """
         self.redis_getter = redis_getter
         self.expiry = expiry
@@ -35,6 +40,7 @@ class RedisSessionInterface(BaseSessionInterface):
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = httponly
+        self.sessioncookie = sessioncookie
 
     async def open(self, request):
         """Opens a session onto the request. Restores the client's session
