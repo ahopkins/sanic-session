@@ -1,13 +1,15 @@
 import ujson
+from typing import Callable
 from sanic_session.base import BaseSessionInterface, SessionDict
-import uuid
+from sanic_session.utils import default_sid_generator
+
 
 class MemcacheSessionInterface(BaseSessionInterface):
     def __init__(
             self, memcache_connection,
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str = 'session',
-            prefix: str = 'session:'):
+            prefix: str = 'session:', sid_generator: Callable[[], str] = default_sid_generator):
         """Initializes the interface for storing client sessions in memcache.
         Requires a client object establised with `asyncio_memcache`.
 
@@ -25,6 +27,9 @@ class MemcacheSessionInterface(BaseSessionInterface):
             prefix (str, optional):
                 Memcache keys will take the format of `prefix+session_id`;
                 specify the prefix here.
+            sid_generator (callable, optional):
+                A callable method that accepts no parameters and returns
+                a unique session identifier of type str.
         """
         self.memcache_connection = memcache_connection
 
@@ -35,6 +40,7 @@ class MemcacheSessionInterface(BaseSessionInterface):
             self.expiry = expiry
 
         self.prefix = prefix
+        self.sid_generator = sid_generator
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = httponly
@@ -57,7 +63,7 @@ class MemcacheSessionInterface(BaseSessionInterface):
         sid = request.cookies.get(self.cookie_name)
 
         if not sid:
-            sid = uuid.uuid4().hex
+            sid = self.sid_generator()
             session_dict = SessionDict(sid=sid)
         else:
             key = (self.prefix + sid).encode()

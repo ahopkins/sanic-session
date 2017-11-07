@@ -1,4 +1,15 @@
-from sanic_session.utils import ExpiringDict
+from sanic_session.utils import ExpiringDict, default_sid_generator
+import uuid
+import pytest
+
+
+def test_default_sid_generator():
+    sid = default_sid_generator()
+    try:
+        val = uuid.UUID(sid, version=4)
+    except ValueError:
+        pytest.fail("Invalid UUID")
+    assert val.hex == sid
 
 
 def test_sets_expiry_internally():

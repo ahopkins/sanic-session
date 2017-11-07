@@ -1,16 +1,17 @@
 import ujson
+from typing import Callable
 from sanic_session.base import BaseSessionInterface, SessionDict
-from sanic_session.utils import ExpiringDict
-import uuid
+from sanic_session.utils import ExpiringDict, default_sid_generator
 
 
 class InMemorySessionInterface(BaseSessionInterface):
     def __init__(
             self, domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str = 'session',
-            prefix: str='session:'):
+            prefix: str = 'session:', sid_generator: Callable[[], str] = default_sid_generator):
         self.expiry = expiry
         self.prefix = prefix
+        self.sid_generator = sid_generator
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = httponly
@@ -34,7 +35,7 @@ class InMemorySessionInterface(BaseSessionInterface):
         sid = request.cookies.get(self.cookie_name)
 
         if not sid:
-            sid = uuid.uuid4().hex
+            sid = self.sid_generator()
             session_dict = SessionDict(sid=sid)
         else:
             val = self.session_store.get(self.prefix + sid)
