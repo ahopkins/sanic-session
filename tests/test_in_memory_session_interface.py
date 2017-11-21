@@ -197,3 +197,45 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
     assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"
+
+
+@pytest.mark.asyncio
+async def test_sessioncookie_should_omit_request_headers(mocker, mock_dict):
+    response = text('foo')
+
+    request = mock_dict()
+    request.cookies = COOKIES
+
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, sessioncookie=True)
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({'foo': 'bar'}))
+    session_interface.session_store.set = mocker.MagicMock()
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+
+    assert 'max-age' not in response.cookies[COOKIE_NAME]
+    assert 'expires' not in response.cookies[COOKIE_NAME]
+
+
+@pytest.mark.asyncio
+async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
+    response = text('foo')
+
+    request = mock_dict()
+    request.cookies = COOKIES
+
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, sessioncookie=True)
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({'foo': 'bar'}))
+    session_interface.session_store.set = mocker.MagicMock()
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+    request['session'].clear()
+    await session_interface.save(request, response)
+
+    assert response.cookies[COOKIE_NAME]['max-age'] == 0
+    assert response.cookies[COOKIE_NAME]['expires'] == 0
