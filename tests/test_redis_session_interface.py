@@ -250,3 +250,52 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_redis):
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
     assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"
+
+
+@pytest.mark.asyncio
+async def test_sessioncookie_should_omit_request_headers(mocker, mock_dict):
+    request = mock_dict()
+    request.cookies = COOKIES
+    redis_connection = mock_redis
+    redis_connection.get = mock_coroutine(ujson.dumps({'foo':'bar'}))
+    redis_connection.delete = mock_coroutine()
+    redis_connection.setex = mock_coroutine()
+    redis_getter = mock_coroutine(redis_connection)
+    response = text('foo')
+
+    session_interface = RedisSessionInterface(
+        redis_getter,
+        cookie_name=COOKIE_NAME,
+        sessioncookie=True)
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+
+    assert response.cookies[COOKIE_NAME].value == SID
+    assert 'max-age' not in response.cookies[COOKIE_NAME]
+    assert 'expires' not in response.cookies[COOKIE_NAME]
+
+
+@pytest.mark.asyncio
+async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
+    request = mock_dict()
+    request.cookies = COOKIES
+    redis_connection = mock_redis
+    redis_connection.get = mock_coroutine(ujson.dumps({'foo':'bar'}))
+    redis_connection.delete = mock_coroutine()
+    redis_connection.setex = mock_coroutine()
+    redis_getter = mock_coroutine(redis_connection)
+    response = text('foo')
+
+    session_interface = RedisSessionInterface(
+        redis_getter,
+        cookie_name=COOKIE_NAME,
+        sessioncookie=True)
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+    request['session'].clear()
+    await session_interface.save(request, response)
+
+    assert response.cookies[COOKIE_NAME]['max-age'] == 0
+    assert response.cookies[COOKIE_NAME]['expires'] == 0

@@ -28,7 +28,9 @@ class MongoDBSessionInterface(BaseSessionInterface):
             domain: str=None,
             expiry: int=30*24*60*60,
             httponly: bool=True,
-            cookie_name: str='session'):
+            cookie_name: str='session',
+            sessioncookie: bool=False):
+
         """Initializes the interface for storing client sessions in MongoDB.
 
         Args:
@@ -44,11 +46,17 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 Adds the `httponly` flag to the session cookie.
             cookie_name (str, optional):
                 Name used for the client cookie.
+            sessioncookie (bool, optional):
+                Specifies if the sent cookie should be a 'session cookie', i.e
+                no Expires or Max-age headers are included. Expiry is still
+                fully tracked on the server side. Default setting is False.
+
         """
         self.expiry = expiry
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = True
+        self.sessioncookie = sessioncookie
 
         # set collection name
         _SessionModel.__coll__ = coll

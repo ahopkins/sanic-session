@@ -246,3 +246,51 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_memcache):
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
     assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"
+
+
+@pytest.mark.asyncio
+async def test_sessioncookie_should_omit_request_headers(mocker, mock_dict, mock_memcache):
+    request = mock_dict()
+    request.cookies = COOKIES
+    memcache_connection = mock_memcache
+    memcache_connection.get = mock_coroutine(
+        ujson.dumps({'foo': 'bar'}).encode())
+    memcache_connection.set = mock_coroutine()
+    memcache_connection.delete = mock_coroutine()
+    response = text('foo')
+
+    session_interface = MemcacheSessionInterface(
+        memcache_connection,
+        cookie_name=COOKIE_NAME,
+        sessioncookie=True)
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+
+    assert 'max-age' not in response.cookies[COOKIE_NAME]
+    assert 'expires' not in response.cookies[COOKIE_NAME]
+
+
+@pytest.mark.asyncio
+async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict, mock_memcache):
+    request = mock_dict()
+    request.cookies = COOKIES
+    memcache_connection = mock_memcache
+    memcache_connection.get = mock_coroutine(
+        ujson.dumps({'foo': 'bar'}).encode())
+    memcache_connection.set = mock_coroutine()
+    memcache_connection.delete = mock_coroutine()
+    response = text('foo')
+
+    session_interface = MemcacheSessionInterface(
+        memcache_connection,
+        cookie_name=COOKIE_NAME,
+        sessioncookie=True)
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+    request['session'].clear()
+    await session_interface.save(request, response)
+
+    assert response.cookies[COOKIE_NAME]['max-age'] == 0
+    assert response.cookies[COOKIE_NAME]['expires'] == 0
