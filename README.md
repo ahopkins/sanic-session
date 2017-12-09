@@ -26,24 +26,12 @@ A simple example uses the in-memory session interface.
 ```python
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import InMemorySessionInterface
+    import sanic_session
 
 
     app = Sanic()
-    session_interface = InMemorySessionInterface()
+    sanic_session.install_middleware(app, 'InMemorySessionInterface')
 
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
 
     @app.route("/")
     async def index(request):
