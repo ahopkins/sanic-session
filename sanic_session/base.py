@@ -1,5 +1,5 @@
 import time
-
+import abc
 from sanic_session.utils import CallbackDict
 
 
@@ -19,7 +19,9 @@ def _calculate_expires(expiry):
     return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
 
 
-class BaseSessionInterface:
+class BaseSessionInterface(metaclass=abc.ABCMeta):
+    # this flag show does this Interface need request/responce middleware hooks
+
     def _delete_cookie(self, request, response):
         response.cookies[self.cookie_name] = request['session'].sid
 
@@ -38,3 +40,11 @@ class BaseSessionInterface:
 
         if self.domain:
             response.cookies[self.cookie_name]['domain'] = self.domain
+
+    @abc.abstractclassmethod
+    async def open(self, request):
+        pass
+
+    @abc.abstractclassmethod
+    async def save(self, request, response) -> None:
+        pass

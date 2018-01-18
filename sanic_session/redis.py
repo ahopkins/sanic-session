@@ -1,8 +1,7 @@
-import ujson
-from sanic_session.base import BaseSessionInterface, SessionDict
 import uuid
-
+import ujson
 from typing import Callable
+from sanic_session.base import BaseSessionInterface, SessionDict
 
 try:
     import asyncio_redis

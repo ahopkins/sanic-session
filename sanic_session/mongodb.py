@@ -1,8 +1,5 @@
 import uuid
-
 from datetime import datetime, timedelta
-
-from sanic_motor import BaseModel
 from sanic_session.base import BaseSessionInterface, SessionDict
 
 try:
@@ -23,9 +20,6 @@ try:
 
 except ImportError:  # pragma: no cover
     _SessionModel = None
-
-
-
 
 
 class MongoDBSessionInterface(BaseSessionInterface):

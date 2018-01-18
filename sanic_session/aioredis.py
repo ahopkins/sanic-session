@@ -1,8 +1,6 @@
+import uuid
 import ujson
 from sanic_session.base import BaseSessionInterface, SessionDict
-import uuid
-
-from typing import Callable
 
 try:
     import aioredis
@@ -12,7 +10,7 @@ except ImportError:
 
 class AIORedisSessionInterface(BaseSessionInterface):
     def __init__(
-            self, redis_getter: Callable,
+            self, redis,
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
@@ -41,10 +39,7 @@ class AIORedisSessionInterface(BaseSessionInterface):
         if aioredis is None:
             raise RuntimeError("Please install aioredis: pip install sanic_session[aioredis]")
 
-        if isinstance(redis_getter, aioredis.commands.Redis):
-            raise RuntimeError("Wrong redis connection provided, please use: await aioredis.create_redis_pool(...) or await aioredis.create_redis(...)")
-
-        self.redis = redis_getter
+        self.redis = redis
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -56,7 +51,6 @@ class AIORedisSessionInterface(BaseSessionInterface):
         """Opens a session onto the request. Restores the client's session
         from Redis if one exists.The session data will be available on
         `request.session`.
-
 
         Args:
             request (sanic.request.Request):
@@ -102,7 +96,7 @@ class AIORedisSessionInterface(BaseSessionInterface):
 
         key = self.prefix + request['session'].sid
         if not request['session']:
-            await self.redis.delete([key])
+            await self.redis.delete(key)
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
@@ -110,7 +104,5 @@ class AIORedisSessionInterface(BaseSessionInterface):
             return
 
         val = ujson.dumps(dict(request['session']))
-
         await self.redis.setex(key, self.expiry, val)
-
         self._set_cookie_expiration(request, response)

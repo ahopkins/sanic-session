@@ -12,17 +12,15 @@ requirements = ('sanic', 'ujson')
 
 extras_require = {
     'aioredis': ['aioredis>=1.0.0'],
+    'redis': ['asyncio_redis'],
     'mongo': ['sanic_motor', 'pymongo'],
     'aiomcache': ['aiomcache>=0.5.2'],
-    'pycrypto': ['cryptography'],
-    'secure': ['cryptography'],
-    'pynacl': ['pynacl'],
 }
 
 
 setup(
     name='sanic_session',
-    version='0.2.0',
+    version='0.3.0',
     description='Provides server-backed sessions for Sanic using Redis, Memcache and more.',
     long_description=long_description,
     url='http://github.com/subyraman/sanic_session',

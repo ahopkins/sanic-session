@@ -1,11 +1,12 @@
+import uuid
 import ujson
 from sanic_session.base import BaseSessionInterface, SessionDict
-import uuid
 
 try:
     import aiomcache
 except ImportError:  # pragma: no cover
     aiomcache = None
+
 
 class MemcacheSessionInterface(BaseSessionInterface):
     def __init__(
