@@ -1,6 +1,6 @@
 import time
 from sanic.response import text
-from sanic_session.memcache_session_interface import MemcacheSessionInterface
+from sanic_session.memcache import MemcacheSessionInterface
 import pytest
 import uuid
 import ujson
