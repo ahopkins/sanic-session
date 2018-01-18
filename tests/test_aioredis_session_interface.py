@@ -35,7 +35,7 @@ def mock_coroutine(return_value=None):
     return Mock(wraps=mock_coro)
 
 
-async def get_interface_and_reque'],st(mocker, redis_getter, data=None):
+async def get_interface_and_request(mocker, redis_getter, data=None):
     request = mock_dict()
     request.cookies = COOKIES
     data = data or {}
