@@ -39,19 +39,9 @@ When building your application you'll eventually want to test that your sessions
 
     # If we are in the testing environment, use the in-memory session interface
     if os.environ.get('TESTING'):
-        session_interface = InMemorySessionInterface()
+        Session(app, interface = InMemorySessionInterface())
     else:
-        session_interface = RedisSessionInterface(redis.get_redis_pool)
-
-
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        await session_interface.save(request, response)
+        Session(app, interface = RedisSessionInterface(redis.get_redis_pool))
 
 
     @app.route("/")

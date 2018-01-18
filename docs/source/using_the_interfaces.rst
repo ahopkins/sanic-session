@@ -52,10 +52,7 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
 
     redis = Redis()
 
-    # pass the getter method for the connection pool into the session
-    session_interface = RedisSessionInterface(redis.get_redis_pool)
-
-    Session(app, interface=RedisSessionInterface)
+    Session(app, interface=RedisSessionInterface(redis.get_redis_pool))
 
 
     @app.route("/")
@@ -98,7 +95,7 @@ This example shows little different approach. You can use classic Flask extensio
     async def server_init(app, loop):
         app.redis = await aioredis.create_redis_pool(app.config['redis'])
         # init extensions fabrics
-        session.init_app(app, AIORedisSessionInterface(app.redis))
+        session.init_app(app, interface=AIORedisSessionInterface(app.redis))
 
 
     @app.route("/")
