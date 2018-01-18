@@ -5,20 +5,26 @@ from datetime import datetime, timedelta
 from sanic_motor import BaseModel
 from sanic_session.base import BaseSessionInterface, SessionDict
 
+try:
+    from sanic_motor import BaseModel
+
+    class _SessionModel(BaseModel):
+        """Collection for session storing.
+
+        Collection name (default session)
+
+        Fields:
+            sid
+            expiry
+            data:
+                User's session data
+        """
+        pass
+
+except ImportError:  # pragma: no cover
+    _SessionModel = None
 
 
-class _SessionModel(BaseModel):
-    """Collection for session storing.
-
-    Collection name (default session)
-
-    Fields:
-        sid
-        expiry
-        data:
-            User's session data
-    """
-    pass
 
 
 
@@ -52,6 +58,9 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 fully tracked on the server side. Default setting is False.
 
         """
+        if _SessionModel is None:
+            raise RuntimeError("Please install Mongo dependencies: pip install sanic_session[mongo]")
+
         self.expiry = expiry
         self.cookie_name = cookie_name
         self.domain = domain
