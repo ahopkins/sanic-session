@@ -32,7 +32,6 @@ class Session:
         async def add_session_to_request(request):
             """Before each request initialize a session
             using the client's request."""
-            print('open')
             await self.interface.open(request)
 
         @app.middleware('response')
