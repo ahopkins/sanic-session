@@ -11,7 +11,8 @@ class RedisSessionInterface(BaseSessionInterface):
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False,
+            use_aioredis=False):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -33,6 +34,8 @@ class RedisSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
+            use_aioredis
+                use aioredis instead of asyncio-redis
         """
         self.redis_getter = redis_getter
         self.expiry = expiry
@@ -41,6 +44,7 @@ class RedisSessionInterface(BaseSessionInterface):
         self.domain = domain
         self.httponly = httponly
         self.sessioncookie = sessioncookie
+        self.use_aioredis = use_aioredis
 
     async def open(self, request):
         """Opens a session onto the request. Restores the client's session
@@ -64,7 +68,10 @@ class RedisSessionInterface(BaseSessionInterface):
             session_dict = SessionDict(sid=sid)
         else:
             redis_connection = await self.redis_getter()
-            val = await redis_connection.get(self.prefix + sid)
+            if self.use_aioredis:
+                val = await redis_connection.execute('get', self.prefix + sid)
+            else:
+                val = await redis_connection.get(self.prefix + sid)
 
             if val is not None:
                 data = ujson.loads(val)
@@ -103,6 +110,9 @@ class RedisSessionInterface(BaseSessionInterface):
 
         val = ujson.dumps(dict(request['session']))
 
-        await redis_connection.setex(key, self.expiry, val)
+        if self.use_aioredis:
+            await redis_connection.execute('setex', key, self.expiry, val)
+        else:
+            await redis_connection.setex(key, self.expiry, val)
 
         self._set_cookie_expiration(request, response)
