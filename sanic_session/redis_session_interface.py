@@ -101,7 +101,10 @@ class RedisSessionInterface(BaseSessionInterface):
         redis_connection = await self.redis_getter()
         key = self.prefix + request['session'].sid
         if not request['session']:
-            await redis_connection.delete([key])
+            if self.use_aioredis:
+                await redis_connection.execute('del', key)
+            else:
+                await redis_connection.delete([key])
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
