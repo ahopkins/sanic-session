@@ -1,6 +1,6 @@
 import ujson
-from sanic_session.base import BaseSessionInterface, SessionDict
-from sanic_session.utils import ExpiringDict
+from .base import BaseSessionInterface, SessionDict
+from .utils import ExpiringDict
 import uuid
 
 

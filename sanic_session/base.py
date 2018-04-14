@@ -1,6 +1,6 @@
 import time
 
-from sanic_session.utils import CallbackDict
+from .utils import CallbackDict
 
 
 class SessionDict(CallbackDict):

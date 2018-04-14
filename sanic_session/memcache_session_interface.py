@@ -1,5 +1,5 @@
 import ujson
-from sanic_session.base import BaseSessionInterface, SessionDict
+from .base import BaseSessionInterface, SessionDict
 import uuid
 
 class MemcacheSessionInterface(BaseSessionInterface):

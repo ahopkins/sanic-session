@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from sanic_motor import BaseModel
-from sanic_session.base import BaseSessionInterface, SessionDict
+from .base import BaseSessionInterface, SessionDict
 
 
 
@@ -124,13 +124,13 @@ class MongoDBSessionInterface(BaseSessionInterface):
         if 'session' not in request:
             return
 
-        sid = request['session'].sid    
+        sid = request['session'].sid
 
         if not request['session']:
             await _SessionModel.delete_one({'sid': sid})
-            
+
             if request['session'].modified:
-                self._delete_cookie(request, response)                      
+                self._delete_cookie(request, response)
 
             return
 
