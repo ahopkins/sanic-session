@@ -7,7 +7,7 @@ from typing import Callable
 
 class RedisSessionInterface(BaseSessionInterface):
     def __init__(
-            self, redis_getter: Callable,
+            self, redis_connection: Callable,
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
@@ -15,9 +15,9 @@ class RedisSessionInterface(BaseSessionInterface):
         """Initializes a session interface backed by Redis.
 
         Args:
-            redis_getter (Callable):
-                Coroutine which should return an asyncio_redis connection pool
-                (suggested) or an asyncio_redis Redis connection.
+            redis_connection:
+                asyncio_redis connection pool (suggested)
+                or an asyncio_redis Redis connection.
             domain (str, optional):
                 Optional domain which will be attached to the cookie.
             expiry (int, optional):
@@ -34,7 +34,7 @@ class RedisSessionInterface(BaseSessionInterface):
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
         """
-        self.redis_getter = redis_getter
+        self.redis_connection = redis_connection
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -63,8 +63,7 @@ class RedisSessionInterface(BaseSessionInterface):
             sid = uuid.uuid4().hex
             session_dict = SessionDict(sid=sid)
         else:
-            redis_connection = await self.redis_getter()
-            val = await redis_connection.get(self.prefix + sid)
+            val = await self.redis_connection.get(self.prefix + sid)
 
             if val is not None:
                 data = ujson.loads(val)
@@ -91,10 +90,9 @@ class RedisSessionInterface(BaseSessionInterface):
         if 'session' not in request:
             return
 
-        redis_connection = await self.redis_getter()
         key = self.prefix + request['session'].sid
         if not request['session']:
-            await redis_connection.delete([key])
+            await self.redis_connection.delete([key])
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
@@ -103,6 +101,6 @@ class RedisSessionInterface(BaseSessionInterface):
 
         val = ujson.dumps(dict(request['session']))
 
-        await redis_connection.setex(key, self.expiry, val)
+        await self.redis_connection.setex(key, self.expiry, val)
 
         self._set_cookie_expiration(request, response)
