@@ -1,6 +1,4 @@
-import uuid
-import ujson
-from sanic_session.base import BaseSessionInterface, SessionDict
+from sanic_session.base import BaseSessionInterface
 
 try:
     import aiomcache
@@ -55,70 +53,16 @@ class MemcacheSessionInterface(BaseSessionInterface):
         self.httponly = httponly
         self.sessioncookie = sessioncookie
 
-    async def open(self, request) -> dict:
-        """Opens a session onto the request. Restores the client's session
-        from memcache if one exists.The session data will be available on
-        `request.session`.
+    async def _get_value(self, prefix, sid):
+        key = (self.prefix + sid).encode()
+        value = await self.memcache_connection.get(key)
+        return value.decode() if value else None
 
+    async def _delete_key(self, key):
+        return await self.memcache_connection.delete(key.encode())
 
-        Args:
-            request (sanic.request.Request):
-                The request, which a sessionwill be opened onto.
-
-        Returns:
-            dict:
-                the client's session data,
-                attached as well to `request.session`.
-        """
-        sid = request.cookies.get(self.cookie_name)
-
-        if not sid:
-            sid = uuid.uuid4().hex
-            session_dict = SessionDict(sid=sid)
-        else:
-            key = (self.prefix + sid).encode()
-            val = await self.memcache_connection.get(key)
-
-            if val is not None:
-                data = ujson.loads(val.decode())
-                session_dict = SessionDict(data, sid=sid)
-            else:
-                session_dict = SessionDict(sid=sid)
-
-        # attach the session data to the request, return it for convenience
-        request['session'] = session_dict
-        return session_dict
-
-    async def save(self, request, response) -> None:
-        """Saves the session to memcache.
-
-        Args:
-            request (sanic.request.Request):
-                The sanic request which has an attached session.
-            response (sanic.response.Response):
-                The Sanic response. Cookies with the appropriate expiration
-                will be added onto this response.
-
-        Returns:
-            None
-        """
-        if 'session' not in request:
-            return
-
-        key = (self.prefix + request['session'].sid).encode()
-
-        if not request['session']:
-            await self.memcache_connection.delete(key)
-
-            if request['session'].modified:
-                self._delete_cookie(request, response)
-
-            return
-
-        val = ujson.dumps(dict(request['session'])).encode()
-
-        await self.memcache_connection.set(
-            key, val,
-            exptime=self.expiry)
-
-        self._set_cookie_expiration(request, response)
+    async def _set_value(self, key, data):
+        return await self.memcache_connection.set(
+            key.encode(), data.encode(),
+            exptime=self.expiry
+        )
