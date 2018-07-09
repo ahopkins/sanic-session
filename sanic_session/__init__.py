@@ -1,13 +1,45 @@
-from .memcache_session_interface import MemcacheSessionInterface
-from .redis_session_interface import RedisSessionInterface
-from .in_memory_session_interface import InMemorySessionInterface
+from .memcache import MemcacheSessionInterface
+from .redis import RedisSessionInterface
+from .memory import InMemorySessionInterface
+from .mongodb import MongoDBSessionInterface
+from .aioredis import AIORedisSessionInterface
+from .base import BaseSessionInterface
 
-# Delay exceptions for missing mongodb dependencies to allow us to
-# work as long as mongodb is not being used.
-try:
-    from .mongodb_session_interface import MongoDBSessionInterface
-except ModuleNotFoundError as e:
-    saved_exception = e
-    class MongoDBSessionInterface(object):
-        def __init__(self, *args, **kwargs):
-            raise saved_exception
+__all__ = ('MemcacheSessionInterface', 'RedisSessionInterface',
+           'InMemorySessionInterface', 'MongoDBSessionInterface',
+           'AIORedisSessionInterface', 'Session')
+
+
+class Session:
+
+    def __init__(self, app=None, interface=None):
+        self.app = app
+        if app:
+            self.init_app(app, interface=interface)
+
+    def init_app(self, app, interface=None):
+        if interface is None:
+            interface = InMemorySessionInterface()
+
+        self.interface = interface
+        self.app = app
+        if not hasattr(app, 'extensions'):
+            app.extensions = {}
+
+        app.extensions['session'] = self
+
+        # @app.middleware('request')
+        async def add_session_to_request(request):
+            """Before each request initialize a session
+            using the client's request."""
+            await self.interface.open(request)
+
+        # @app.middleware('response')
+        async def save_session(request, response):
+            """After each request save the session, pass
+            the response to set client cookies.
+            """
+            await self.interface.save(request, response)
+
+        app.request_middleware.appendleft(add_session_to_request)
+        app.response_middleware.append(save_session)

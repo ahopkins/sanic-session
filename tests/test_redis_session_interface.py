@@ -1,6 +1,6 @@
 import time
 from sanic.response import text
-from sanic_session.redis_session_interface import RedisSessionInterface
+from sanic_session.redis import RedisSessionInterface
 import pytest
 import uuid
 import ujson

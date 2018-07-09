@@ -1,7 +1,7 @@
+import uuid
 import ujson
 from sanic_session.base import BaseSessionInterface, SessionDict
 from sanic_session.utils import ExpiringDict
-import uuid
 
 
 class InMemorySessionInterface(BaseSessionInterface):

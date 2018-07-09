@@ -1,23 +1,26 @@
+import uuid
 import ujson
 from sanic_session.base import BaseSessionInterface, SessionDict
-import uuid
 
-from typing import Callable
+try:
+    import aiomcache
+except ImportError:  # pragma: no cover
+    aiomcache = None
 
 
-class RedisSessionInterface(BaseSessionInterface):
+class MemcacheSessionInterface(BaseSessionInterface):
     def __init__(
-            self, redis_getter: Callable,
+            self, memcache_connection,
             domain: str=None, expiry: int = 2592000,
-            httponly: bool=True, cookie_name: str='session',
-            prefix: str='session:',
+            httponly: bool=True, cookie_name: str = 'session',
+            prefix: str = 'session:',
             sessioncookie: bool=False):
-        """Initializes a session interface backed by Redis.
+        """Initializes the interface for storing client sessions in memcache.
+        Requires a client object establised with `asyncio_memcache`.
 
         Args:
-            redis_getter (Callable):
-                Coroutine which should return an asyncio_redis connection pool
-                (suggested) or an asyncio_redis Redis connection.
+            memcache_connection (aiomccache.Client):
+                The memcache client used for interfacing with memcache.
             domain (str, optional):
                 Optional domain which will be attached to the cookie.
             expiry (int, optional):
@@ -33,18 +36,28 @@ class RedisSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
+
         """
-        self.redis_getter = redis_getter
-        self.expiry = expiry
+        if aiomcache is None:
+            raise RuntimeError("Please install aiomcache: pip install sanic_session[aiomcache]")
+
+        self.memcache_connection = memcache_connection
+
+        # memcache has a maximum 30-day cache limit
+        if expiry > 2592000:
+            self.expiry = 0
+        else:
+            self.expiry = expiry
+
         self.prefix = prefix
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = httponly
         self.sessioncookie = sessioncookie
 
-    async def open(self, request):
+    async def open(self, request) -> dict:
         """Opens a session onto the request. Restores the client's session
-        from Redis if one exists.The session data will be available on
+        from memcache if one exists.The session data will be available on
         `request.session`.
 
 
@@ -63,20 +76,21 @@ class RedisSessionInterface(BaseSessionInterface):
             sid = uuid.uuid4().hex
             session_dict = SessionDict(sid=sid)
         else:
-            redis_connection = await self.redis_getter()
-            val = await redis_connection.get(self.prefix + sid)
+            key = (self.prefix + sid).encode()
+            val = await self.memcache_connection.get(key)
 
             if val is not None:
-                data = ujson.loads(val)
+                data = ujson.loads(val.decode())
                 session_dict = SessionDict(data, sid=sid)
             else:
                 session_dict = SessionDict(sid=sid)
 
+        # attach the session data to the request, return it for convenience
         request['session'] = session_dict
         return session_dict
 
     async def save(self, request, response) -> None:
-        """Saves the session into Redis and returns appropriate cookies.
+        """Saves the session to memcache.
 
         Args:
             request (sanic.request.Request):
@@ -91,18 +105,20 @@ class RedisSessionInterface(BaseSessionInterface):
         if 'session' not in request:
             return
 
-        redis_connection = await self.redis_getter()
-        key = self.prefix + request['session'].sid
+        key = (self.prefix + request['session'].sid).encode()
+
         if not request['session']:
-            await redis_connection.delete([key])
+            await self.memcache_connection.delete(key)
 
             if request['session'].modified:
                 self._delete_cookie(request, response)
 
             return
 
-        val = ujson.dumps(dict(request['session']))
+        val = ujson.dumps(dict(request['session'])).encode()
 
-        await redis_connection.setex(key, self.expiry, val)
+        await self.memcache_connection.set(
+            key, val,
+            exptime=self.expiry)
 
         self._set_cookie_expiration(request, response)
