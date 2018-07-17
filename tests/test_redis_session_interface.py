@@ -257,7 +257,7 @@ async def test_sessioncookie_should_omit_request_headers(mocker, mock_dict):
     request = mock_dict()
     request.cookies = COOKIES
     redis_connection = mock_redis
-    redis_connection.get = mock_coroutine(ujson.dumps({'foo':'bar'}))
+    redis_connection.get = mock_coroutine(ujson.dumps({'foo': 'bar'}))
     redis_connection.delete = mock_coroutine()
     redis_connection.setex = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
@@ -281,7 +281,7 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     request = mock_dict()
     request.cookies = COOKIES
     redis_connection = mock_redis
-    redis_connection.get = mock_coroutine(ujson.dumps({'foo':'bar'}))
+    redis_connection.get = mock_coroutine(ujson.dumps({'foo': 'bar'}))
     redis_connection.delete = mock_coroutine()
     redis_connection.setex = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)

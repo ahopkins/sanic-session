@@ -1,6 +1,5 @@
-import uuid
 from datetime import datetime, timedelta
-from sanic_session.base import BaseSessionInterface, SessionDict
+from sanic_session.base import BaseSessionInterface
 
 try:
     from sanic_motor import BaseModel
@@ -53,13 +52,16 @@ class MongoDBSessionInterface(BaseSessionInterface):
 
         """
         if _SessionModel is None:
-            raise RuntimeError("Please install Mongo dependencies: pip install sanic_session[mongo]")
+            msg = "Please install Mongo dependencies: pip install sanic_session[mongo]"
+            raise RuntimeError(msg)
 
         self.expiry = expiry
         self.cookie_name = cookie_name
         self.domain = domain
         self.httponly = True
         self.sessioncookie = sessioncookie
+        # prefix not needed for mongodb as mongodb uses uuid4 natively
+        self.prefix = ''
 
         # set collection name
         _SessionModel.__coll__ = coll
@@ -78,75 +80,20 @@ class MongoDBSessionInterface(BaseSessionInterface):
             await _SessionModel.create_index('sid')
             await _SessionModel.create_index('expiry', expireAfterSeconds=0)
 
+    async def _get_value(self, prefix, key):
+        await _SessionModel.find_one({'sid': key}, as_raw=True)
 
-    async def open(self, request):
-        """Opens a session onto the request. Restores the client's session
-        from MongoDB if one exists.The session data will be available on
-        `request.session`.
+    async def _delete_key(self, key):
+        await _SessionModel.delete_one({'sid': key})
 
-
-        Args:
-            request (sanic.request.Request):
-                The request, which a sessionwill be opened onto.
-
-        Returns:
-            dict:
-                the client's session data,
-                attached as well to `request.session`.
-        """
-        sid = request.cookies.get(self.cookie_name)
-
-        if not sid:
-            sid = uuid.uuid4().hex
-            session_dict = SessionDict(sid=sid)
-        else:
-            document = await _SessionModel.find_one({'sid': sid}, as_raw=True)
-
-            if document is not None:
-                session_dict = SessionDict(document['data'], sid=sid)
-            else:
-                session_dict = SessionDict(sid=sid)
-
-        request['session'] = session_dict
-        return session_dict
-
-
-    async def save(self, request, response) -> None:
-        """Saves the session into MongoDB and returns appropriate cookies.
-
-        Args:
-            request (sanic.request.Request):
-                The sanic request which has an attached session.
-            response (sanic.response.Response):
-                The Sanic response. Cookies with the appropriate expiration
-                will be added onto this response.
-
-        Returns:
-            None
-        """
-        if 'session' not in request:
-            return
-
-        sid = request['session'].sid    
-
-        if not request['session']:
-            await _SessionModel.delete_one({'sid': sid})
-            
-            if request['session'].modified:
-                self._delete_cookie(request, response)                      
-
-            return
-
-        data = dict(request['session'])
+    async def _set_value(self, key, data):
         expiry = datetime.utcnow() + timedelta(seconds=self.expiry)
-
         await _SessionModel.replace_one(
-                            {'sid': sid},
-                            {
-                                'sid': sid,
-                                'expiry': expiry,
-                                'data': data
-                            },
-                            upsert=True)
-
-        self._set_cookie_expiration(request, response)
+            {'sid': key},
+            {
+                'sid': key,
+                'expiry': expiry,
+                'data': data
+            },
+            upsert=True
+        )

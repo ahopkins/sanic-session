@@ -1,7 +1,5 @@
-import uuid
-import ujson
 from typing import Callable
-from sanic_session.base import BaseSessionInterface, SessionDict
+from sanic_session.base import BaseSessionInterface
 
 try:
     import asyncio_redis
@@ -49,67 +47,14 @@ class RedisSessionInterface(BaseSessionInterface):
         self.httponly = httponly
         self.sessioncookie = sessioncookie
 
-    async def open(self, request):
-        """Opens a session onto the request. Restores the client's session
-        from Redis if one exists.The session data will be available on
-        `request.session`.
-
-
-        Args:
-            request (sanic.request.Request):
-                The request, which a sessionwill be opened onto.
-
-        Returns:
-            dict:
-                the client's session data,
-                attached as well to `request.session`.
-        """
-        sid = request.cookies.get(self.cookie_name)
-
-        if not sid:
-            sid = uuid.uuid4().hex
-            session_dict = SessionDict(sid=sid)
-        else:
-            redis_connection = await self.redis_getter()
-            val = await redis_connection.get(self.prefix + sid)
-
-            if val is not None:
-                data = ujson.loads(val)
-                session_dict = SessionDict(data, sid=sid)
-            else:
-                session_dict = SessionDict(sid=sid)
-
-        request['session'] = session_dict
-        return session_dict
-
-    async def save(self, request, response) -> None:
-        """Saves the session into Redis and returns appropriate cookies.
-
-        Args:
-            request (sanic.request.Request):
-                The sanic request which has an attached session.
-            response (sanic.response.Response):
-                The Sanic response. Cookies with the appropriate expiration
-                will be added onto this response.
-
-        Returns:
-            None
-        """
-        if 'session' not in request:
-            return
-
+    async def _get_value(self, prefix, key):
         redis_connection = await self.redis_getter()
-        key = self.prefix + request['session'].sid
-        if not request['session']:
-            await redis_connection.delete([key])
+        return await redis_connection.get(prefix + key)
 
-            if request['session'].modified:
-                self._delete_cookie(request, response)
+    async def _delete_key(self, key):
+        redis_connection = await self.redis_getter()
+        await redis_connection.delete([key])
 
-            return
-
-        val = ujson.dumps(dict(request['session']))
-
-        await redis_connection.setex(key, self.expiry, val)
-
-        self._set_cookie_expiration(request, response)
+    async def _set_value(self, key, data):
+        redis_connection = await self.redis_getter()
+        await redis_connection.setex(key, self.expiry, data)
