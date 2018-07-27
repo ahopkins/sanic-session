@@ -1,18 +1,23 @@
-### sanic_session
+# Sanic session management for humans
 
-sanic_session is an extension for sanic that integrates server-backed sessions with a Flask-like API. 
+`sanic_session` is session management extension for [Sanic](http://sanic.readthedocs.io/) that integrates server-backed sessions with most convenient API.
 
-sanic_session provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
+`sanic_session` provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
 
-* Redis
-* Memcache
+* Redis (supports both drivers `aioredis` and `asyncio_redis`)
+* Memcache (via `aiomcache`)
+* Mongodb (via `sanic_motor` and `pymongo`)
 * In-Memory (suitable for testing and development environments)
 
 ## Installation
 
-Install with `pip`:
+Install with `pip` (there is other options for different drivers, check documentation):
 
 `pip install sanic_session`
+
+or if you prefer `Pipenv`:
+
+`pipenv install sanic_session`
 
 ## Documentation
 
@@ -21,7 +26,6 @@ Documentation is available at [PythonHosted](https://pythonhosted.org/sanic_sess
 ## Example
 
 A simple example uses the in-memory session interface.
-
 
 ```python
 from sanic import Sanic

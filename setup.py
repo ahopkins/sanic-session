@@ -16,7 +16,7 @@ extras_require = {
 
 setup(
     name='sanic_session',
-    version='0.3.1',
+    version='0.3.2',
     description='Provides server-backed sessions for Sanic using Redis, Memcache and more.',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -34,9 +34,14 @@ setup(
     zip_safe=False,
     keywords=['sessions', 'sanic', 'redis', 'memcache'],
     classifiers=[
+        'Framework :: AsyncIO',
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: WWW/HTTP :: Session',
     ]
 )
