@@ -1,11 +1,7 @@
 from setuptools import setup
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except:
-    long_description = ''
-
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 # Set requirements here
 requirements = ('sanic', 'ujson')
@@ -20,9 +16,10 @@ extras_require = {
 
 setup(
     name='sanic_session',
-    version='0.3.0',
+    version='0.3.1',
     description='Provides server-backed sessions for Sanic using Redis, Memcache and more.',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url='http://github.com/subyraman/sanic_session',
     author='Suby Raman',
     license='MIT',
