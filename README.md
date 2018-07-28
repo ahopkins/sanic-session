@@ -21,7 +21,7 @@ or if you prefer `Pipenv`:
 
 ## Documentation
 
-Documentation is available at [PythonHosted](https://pythonhosted.org/sanic_session/).
+Documentation is available at [sanic-session.readthedocs.io](http://sanic-session.readthedocs.io/en/latest/).
 
 ## Example
 
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
 ```
 
-Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](https://pythonhosted.org/sanic_session/using_the_interfaces.html).
+Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](http://sanic-session.readthedocs.io/en/latest/using_the_interfaces.html).
