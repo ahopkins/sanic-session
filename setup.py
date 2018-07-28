@@ -21,7 +21,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='http://github.com/subyraman/sanic_session',
-    author='Suby Raman',
+    author='Suby Raman, Mikhail Kashkin',
+    author_email='m@xen.ru',
     license='MIT',
     packages=['sanic_session'],
     # Kludge: Specifying requirements for setup and install works around
