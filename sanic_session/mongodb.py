@@ -81,7 +81,8 @@ class MongoDBSessionInterface(BaseSessionInterface):
             await _SessionModel.create_index('expiry', expireAfterSeconds=0)
 
     async def _get_value(self, prefix, key):
-        await _SessionModel.find_one({'sid': key}, as_raw=True)
+        value = await _SessionModel.find_one({'sid': key}, as_raw=True)
+        return value['data'] if value else None
 
     async def _delete_key(self, key):
         await _SessionModel.delete_one({'sid': key})
