@@ -17,7 +17,10 @@ extras_require = {
 setup(
     name='sanic_session',
     version='0.4.1',
-    description='Provides server-backed sessions for Sanic using Redis, Memcache and more.',
+    description=(
+        'Provides server-backed sessions for Sanic '
+        'using Redis, Memcache and more.'
+    ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='http://github.com/subyraman/sanic_session',
