@@ -15,6 +15,7 @@ class SessionDict(CallbackDict):
         self.sid = sid
         self.modified = False
 
+_sessions_cache = {}
 
 def _calculate_expires(expiry):
     expires = time.time() + expiry
@@ -32,6 +33,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name]['max-age'] = 0
 
     def _set_cookie_expiration(self, request, response):
+        if not response:
+            return
         response.cookies[self.cookie_name] = request['session'].sid
         response.cookies[self.cookie_name]['httponly'] = self.httponly
 
@@ -87,6 +90,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         if not sid:
             sid = uuid.uuid4().hex
             session_dict = SessionDict(sid=sid)
+        elif _sessions_cache.get(sid) is not None:
+                session_dict = _sessions_cache[sid]
         else:
             val = await self._get_value(self.prefix, sid)
 
@@ -95,6 +100,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
                 session_dict = SessionDict(data, sid=sid)
             else:
                 session_dict = SessionDict(sid=sid)
+
+            _sessions_cache[sid] = session_dict
 
         # attach the session data to the request, return it for convenience
         request['session'] = session_dict
