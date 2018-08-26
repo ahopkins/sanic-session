@@ -16,7 +16,7 @@ extras_require = {
 
 setup(
     name='sanic_session',
-    version='0.4.1',
+    version='0.4.2',
     description=(
         'Provides server-backed sessions for Sanic '
         'using Redis, Memcache and more.'
@@ -35,6 +35,7 @@ setup(
     #   https://github.com/numpy/numpy/issues/2434
     setup_requires=requirements,
     install_requires=requirements,
+    extras_require=extras_require,
     zip_safe=False,
     keywords=['sessions', 'sanic', 'redis', 'memcache'],
     classifiers=[
