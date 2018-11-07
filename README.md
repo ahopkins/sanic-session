@@ -4,10 +4,10 @@
 
 `sanic_session` provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
 
-* Redis (supports both drivers `aioredis` and `asyncio_redis`)
-* Memcache (via `aiomcache`)
-* Mongodb (via `sanic_motor` and `pymongo`)
-* In-Memory (suitable for testing and development environments)
+  * Redis (supports both drivers `aioredis` and `asyncio_redis`)
+  * Memcache (via `aiomcache`)
+  * Mongodb (via `sanic_motor` and `pymongo`)
+  * In-Memory (suitable for testing and development environments)
 
 ## Installation
 
