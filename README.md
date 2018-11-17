@@ -1,4 +1,6 @@
 # Sanic session management for humans
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fxen%2Fsanic_session.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fxen%2Fsanic_session?ref=badge_shield)
+
 
 `sanic_session` is session management extension for [Sanic](http://sanic.readthedocs.io/) that integrates server-backed sessions with most convenient API.
 
@@ -50,3 +52,7 @@ if __name__ == "__main__":
 ```
 
 Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](http://sanic-session.readthedocs.io/en/latest/using_the_interfaces.html).
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fxen%2Fsanic_session.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fxen%2Fsanic_session?ref=badge_large)
