@@ -34,7 +34,7 @@ class AIORedisSessionInterface(BaseSessionInterface):
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
             samesite (str, optional):
-                Will prevent the cookie from being sent by the browser to the target  
+                Will prevent the cookie from being sent by the browser to the target
                 site in all cross-site browsing context, even when following a regular link.
                 One of ('lax', 'strict')
                 Default: None
