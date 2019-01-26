@@ -12,7 +12,7 @@ class MemcacheSessionInterface(BaseSessionInterface):
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str = 'session',
             prefix: str = 'session:',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False, samesite: str=None):
         """Initializes the interface for storing client sessions in memcache.
         Requires a client object establised with `asyncio_memcache`.
 
@@ -34,7 +34,11 @@ class MemcacheSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
-
+            samesite (str, optional):
+                Will prevent the cookie from being sent by the browser to the target  
+                site in all cross-site browsing context, even when following a regular link.
+                One of ('lax', 'strict')
+                Default: None
         """
         if aiomcache is None:
             raise RuntimeError("Please install aiomcache: pip install sanic_session[aiomcache]")
@@ -52,6 +56,7 @@ class MemcacheSessionInterface(BaseSessionInterface):
         self.domain = domain
         self.httponly = httponly
         self.sessioncookie = sessioncookie
+        self.samesite = samesite
 
     async def _get_value(self, prefix, sid):
         key = (self.prefix + sid).encode()

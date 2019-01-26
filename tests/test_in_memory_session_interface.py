@@ -239,3 +239,46 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
 
     assert response.cookies[COOKIE_NAME]['max-age'] == 0
     assert response.cookies[COOKIE_NAME]['expires'] == 0
+
+@pytest.mark.asyncio
+async def test_samesite_dict_set_lax(mocker, mock_dict):
+    SAMESITE = 'lax'
+    response = text('foo')
+
+    request = mock_dict()
+    request.cookies = COOKIES
+
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, samesite=SAMESITE
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps(dict(foo='bar'))
+    )
+    session_interface.session_store.set = mocker.MagicMock()
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+
+    assert response.cookies[COOKIE_NAME]['samesite'] == SAMESITE
+
+@pytest.mark.asyncio
+async def test_samesite_dict_set_None(mocker, mock_dict):
+    SAMESITE = None
+
+    response = text('foo')
+
+    request = mock_dict()
+    request.cookies = COOKIES
+
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, samesite=SAMESITE
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps(dict(foo='bar'))
+    )
+    session_interface.session_store.set = mocker.MagicMock()
+
+    await session_interface.open(request)
+    await session_interface.save(request, response)
+
+    assert response.cookies[COOKIE_NAME].get('samesite') is SAMESITE

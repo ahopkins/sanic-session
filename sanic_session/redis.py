@@ -13,7 +13,8 @@ class RedisSessionInterface(BaseSessionInterface):
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False,
+            samesite: str=None):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -35,6 +36,11 @@ class RedisSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
+            samesite (str, optional):
+                Will prevent the cookie from being sent by the browser to the target  
+                site in all cross-site browsing context, even when following a regular link.
+                One of ('lax', 'strict')
+                Default: None
         """
         if asyncio_redis is None:
             raise RuntimeError("Please install asyncio_redis: pip install sanic_session[redis]")
@@ -46,6 +52,7 @@ class RedisSessionInterface(BaseSessionInterface):
         self.domain = domain
         self.httponly = httponly
         self.sessioncookie = sessioncookie
+        self.samesite = samesite
 
     async def _get_value(self, prefix, key):
         redis_connection = await self.redis_getter()

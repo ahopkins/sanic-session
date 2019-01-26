@@ -31,7 +31,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name]['expires'] = 0
         response.cookies[self.cookie_name]['max-age'] = 0
 
-    def _set_cookie_expiration(self, request, response):
+    def _set_cookie_props(self, request, response):
         response.cookies[self.cookie_name] = request['session'].sid
         response.cookies[self.cookie_name]['httponly'] = self.httponly
 
@@ -42,6 +42,9 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
         if self.domain:
             response.cookies[self.cookie_name]['domain'] = self.domain
+
+        if self.samesite is not None:
+            response.cookies[self.cookie_name]['samesite'] = self.samesite
 
     @abc.abstractmethod
     async def _get_value(self, prefix: str, sid: str):
@@ -126,4 +129,4 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
         val = ujson.dumps(dict(request['session']))
         await self._set_value(key, val)
-        self._set_cookie_expiration(request, response)
+        self._set_cookie_props(request, response)

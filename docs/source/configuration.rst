@@ -17,6 +17,8 @@ When initializing a session interface, you have a number of optional arguments f
     Storage keys will take the format of `prefix+<session_id>`. Specify the prefix here.
 **sessioncookie** (bool, optional):
     If enabled the browser will be instructed to delete the cookie when the browser is closed. This is done by omitting the `max-age` and `expires` headers when sending the cookie. The `expiry` configuration option will still be honored on the server side. This is option is disabled by default.
+**samesite** (str, optional):
+    One of 'strict' or 'lax'. Defaults to None  https://www.owasp.org/index.php/SameSite
 
 **Example 1:**
 
@@ -24,7 +26,7 @@ When initializing a session interface, you have a number of optional arguments f
 
     session_interface = InMemorySessionInterface(
         domain='.example.com', expiry=0,
-        httponly=False, cookie_name="cookie", prefix="sessionprefix:")
+        httponly=False, cookie_name="cookie", prefix="sessionprefix:",  samesite="strict")
 
 Will result in a session that:
 
@@ -33,6 +35,7 @@ Will result in a session that:
 - Will be accessible by Javascript.
 - Will be named "cookie" on the client.
 - Will be named "sessionprefix:<sid>" in the session store.
+- Will prevent the cookie from being sent by the browser to the target site in all cross-site browsing context, even when following a regular link.
 
 **Example 2:**
 

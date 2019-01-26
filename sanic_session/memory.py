@@ -7,7 +7,7 @@ class InMemorySessionInterface(BaseSessionInterface):
             self, domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str = 'session',
             prefix: str='session:',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False, samesite: str=None):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -15,6 +15,7 @@ class InMemorySessionInterface(BaseSessionInterface):
         self.httponly = httponly
         self.session_store = ExpiringDict()
         self.sessioncookie = sessioncookie
+        self.samesite = samesite
 
     async def _get_value(self, prefix, sid):
         return self.session_store.get(self.prefix + sid)

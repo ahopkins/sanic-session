@@ -28,7 +28,8 @@ class MongoDBSessionInterface(BaseSessionInterface):
             expiry: int=30*24*60*60,
             httponly: bool=True,
             cookie_name: str='session',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False,
+            samesite: str=None):
 
         """Initializes the interface for storing client sessions in MongoDB.
 
@@ -49,6 +50,11 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
+            samesite (str, optional):
+                Will prevent the cookie from being sent by the browser to the target  
+                site in all cross-site browsing context, even when following a regular link.
+                One of ('lax', 'strict')
+                Default: None
 
         """
         if _SessionModel is None:
@@ -60,6 +66,7 @@ class MongoDBSessionInterface(BaseSessionInterface):
         self.domain = domain
         self.httponly = True
         self.sessioncookie = sessioncookie
+        self.samesite = samesite
         # prefix not needed for mongodb as mongodb uses uuid4 natively
         self.prefix = ''
 
