@@ -13,7 +13,6 @@ __all__ = ('MemcacheSessionInterface', 'RedisSessionInterface',
 class Session:
 
     def __init__(self, app=None, interface=None):
-        self.app = app
         if app:
             self.init_app(app, interface=interface)
 
@@ -22,11 +21,10 @@ class Session:
             interface = InMemorySessionInterface()
 
         self.interface = interface
-        self.app = app
         if not hasattr(app, 'extensions'):
             app.extensions = {}
 
-        app.extensions['session'] = self
+        app.extensions[interface.session_name] = self  # Defaults to 'session'
 
         # @app.middleware('request')
         async def add_session_to_request(request):

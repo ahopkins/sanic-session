@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from sanic_session.base import BaseSessionInterface
+import warnings
 
 try:
     from sanic_motor import BaseModel
@@ -28,7 +29,9 @@ class MongoDBSessionInterface(BaseSessionInterface):
             expiry: int=30*24*60*60,
             httponly: bool=True,
             cookie_name: str='session',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False,
+            samesite: str=None,
+            session_name: str='session'):
 
         """Initializes the interface for storing client sessions in MongoDB.
 
@@ -49,19 +52,44 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
-
+            samesite (str, optional):
+                Will prevent the cookie from being sent by the browser to the target
+                site in all cross-site browsing context, even when following a regular link.
+                One of ('lax', 'strict')
+                Default: None
+            session_name (str, optional):
+                Name of the session that will be accessible through the request.
+                e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request['alt_session']``
+                e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request['session']``
+                Default: 'session'
         """
         if _SessionModel is None:
             msg = "Please install Mongo dependencies: pip install sanic_session[mongo]"
             raise RuntimeError(msg)
 
-        self.expiry = expiry
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = True
-        self.sessioncookie = sessioncookie
         # prefix not needed for mongodb as mongodb uses uuid4 natively
-        self.prefix = ''
+        prefix = ''
+
+        if httponly is not True:
+            warnings.warn('''
+                httponly default arg has changed.
+                To spare you some debugging time, httponly is currently hardcoded as True.
+                This message will be removed with the next release. And ``httponly`` will 
+                no longer be hardcoded
+            ''', DeprecationWarning)
+
+        super().__init__(
+            expiry=expiry,
+            prefix=prefix,
+            cookie_name=cookie_name,
+            domain=domain,
+            # I'm gonna leave this as True because changing it might be hazardous.
+            # But this should be changed to __init__'s httponly kwarg instead of being hardcoded
+            httponly=True,
+            sessioncookie=sessioncookie,
+            samesite=samesite,
+            session_name=session_name,
+        )
 
         # set collection name
         _SessionModel.__coll__ = coll

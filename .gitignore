@@ -1,3 +1,9 @@
+.coverage
+.tox/
+.vscode/
+bin/
+include/
+lib/
 .env
 *sublime*
 *.egg*

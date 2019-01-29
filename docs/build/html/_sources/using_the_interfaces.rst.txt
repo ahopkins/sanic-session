@@ -3,11 +3,23 @@
 Using the interfaces
 =====================
 
-Redis
+For now project has set of different interfaces. You can install each manually or using the extra parameters:
+
+:code:`pip install sanic_session[aioredis]`
+
+Other supported backend keywords:
+
+- :code:`aioredis` (dependency 'aioredis'),
+- :code:`redis' ('asyncio_redis'),
+- :code:`mongo' ('sanic_motor' and 'pymongo'),
+- :code:`aiomcache' ('aiomcache')
+
+
+Redis (asyncio_redis)
 -----------------
 `Redis <https://redis.io/>`_ is a popular and widely supported key-value store. In order to interface with redis, you will need to add :code:`asyncio_redis` to your project. Do so with pip:
 
-:code:`pip install asyncio_redis`
+:code:`pip install asyncio_redis` or :code:`pip install sanic_session[redis]`
 
 To integrate Redis with :code:`sanic_session` you need to pass a getter method into the :code:`RedisSessionInterface` which returns a connection pool. This is required since there is no way to synchronously create a connection pool. An example is below:
 
@@ -17,8 +29,7 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
 
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import RedisSessionInterface
-
+    from sanic_session import Session, RedisSessionInterface
 
     app = Sanic()
 
@@ -41,22 +52,7 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
 
     redis = Redis()
 
-    # pass the getter method for the connection pool into the session
-    session_interface = RedisSessionInterface(redis.get_redis_pool)
-
-
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
+    Session(app, interface=RedisSessionInterface(redis.get_redis_pool))
 
 
     @app.route("/")
@@ -74,11 +70,55 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
     if __name__ == "__main__":
         app.run(host="0.0.0.0", port=8000, debug=True)
 
+
+Redis (aioredis)
+-----------------
+`aioredis` have little better syntax and more popular since it supported by `aiohttp` team.
+
+:code:`pip install asyncio_redis` or :code:`pip install sanic_session[aioredis]`
+
+This example shows little different approach. You can use classic Flask extensions approach with factory based initialization process. You can use it with different backends also.
+
+.. code-block:: python
+
+    import aioredis
+
+    from sanic import Sanic
+    from sanic.response import text
+    from sanic_session import Session, AIORedisSessionInterface
+
+    app = Sanic(__name__, load_env=False)
+    # init extensions
+    session = Session()
+
+    @app.listener('before_server_start')
+    async def server_init(app, loop):
+        app.redis = await aioredis.create_redis_pool(app.config['redis'])
+        # init extensions fabrics
+        session.init_app(app, interface=AIORedisSessionInterface(app.redis))
+
+
+    @app.route("/")
+    async def test(request):
+        # interact with the session like a normal dict
+        if not request['session'].get('foo'):
+            request['session']['foo'] = 0
+
+        request['session']['foo'] += 1
+
+        response = text(request['session']['foo'])
+
+        return response
+
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=8000, debug=True)
+
+
 Memcache
 -----------------
 `Memcache <https://memcached.org/>`_ is another popular key-value storage system. In order to interface with memcache, you will need to add :code:`aiomcache` to your project. Do so with pip:
 
-:code:`pip install aiomcache`
+:code:`pip install aiomcache` or :code:`pip install sanic_session[aiomcache]`
 
 To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiomcache.Client` into the session interface, as follows:
 
@@ -90,7 +130,7 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
 
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import MemcacheSessionInterface
+    from sanic_session import Session, MemcacheSessionInterface
 
     app = Sanic()
 
@@ -101,22 +141,7 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
     client = aiomcache.Client("127.0.0.1", 11211, loop=loop)
 
     # pass the memcache client into the session
-    session_interface = MemcacheSessionInterface(client)
-
-
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
-
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
-
+    session = Session(app, interface=MemcacheSessionInterface(client))
 
     @app.route("/")
     async def test(request):
@@ -142,24 +167,16 @@ In-Memory
 
     from sanic import Sanic
     from sanic.response import text
-    from sanic_session import InMemorySessionInterface
+    from sanic_session import Session
 
 
     app = Sanic()
-    session_interface = InMemorySessionInterface()
 
-    @app.middleware('request')
-    async def add_session_to_request(request):
-        # before each request initialize a session
-        # using the client's request
-        await session_interface.open(request)
+    Session(app)  # because InMemorySessionInterface used by default
 
-
-    @app.middleware('response')
-    async def save_session(request, response):
-        # after each request save the session,
-        # pass the response to set client cookies
-        await session_interface.save(request, response)
+    # of full syntax:
+    #   from sanic_session import InMemorySessionInterface
+    #   session = Session(app, interface=InMemorySessionInterface())
 
     @app.route("/")
     async def index(request):

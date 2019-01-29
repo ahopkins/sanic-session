@@ -13,7 +13,9 @@ class RedisSessionInterface(BaseSessionInterface):
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
-            sessioncookie: bool=False):
+            sessioncookie: bool=False,
+            samesite: str=None,
+            session_name: str='session'):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -35,17 +37,32 @@ class RedisSessionInterface(BaseSessionInterface):
                 Specifies if the sent cookie should be a 'session cookie', i.e
                 no Expires or Max-age headers are included. Expiry is still
                 fully tracked on the server side. Default setting is False.
+            samesite (str, optional):
+                Will prevent the cookie from being sent by the browser to the target
+                site in all cross-site browsing context, even when following a regular link.
+                One of ('lax', 'strict')
+                Default: None
+            session_name (str, optional):
+                Name of the session that will be accessible through the request.
+                e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request['alt_session']``
+                e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request['session']``
+                Default: 'session'
         """
         if asyncio_redis is None:
             raise RuntimeError("Please install asyncio_redis: pip install sanic_session[redis]")
 
         self.redis_getter = redis_getter
-        self.expiry = expiry
-        self.prefix = prefix
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = httponly
-        self.sessioncookie = sessioncookie
+
+        super().__init__(
+            expiry=expiry,
+            prefix=prefix,
+            cookie_name=cookie_name,
+            domain=domain,
+            httponly=httponly,
+            sessioncookie=sessioncookie,
+            samesite=samesite,
+            session_name=session_name,
+        )
 
     async def _get_value(self, prefix, key):
         redis_connection = await self.redis_getter()
