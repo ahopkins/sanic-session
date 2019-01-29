@@ -16,13 +16,17 @@ class SessionDict(CallbackDict):
         self.modified = False
 
 
-def _calculate_expires(expiry):
-    expires = time.time() + expiry
-    return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
-
-
 class BaseSessionInterface(metaclass=abc.ABCMeta):
     # this flag show does this Interface need request/responce middleware hooks
+
+    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite):
+        self.expiry = expiry
+        self.prefix = prefix
+        self.cookie_name = cookie_name
+        self.domain = domain
+        self.httponly = httponly
+        self.sessioncookie = sessioncookie
+        self.samesite = samesite
 
     def _delete_cookie(self, request, response):
         response.cookies[self.cookie_name] = request['session'].sid
@@ -31,13 +35,18 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name]['expires'] = 0
         response.cookies[self.cookie_name]['max-age'] = 0
 
+    @staticmethod
+    def _calculate_expires(expiry):
+        expires = time.time() + expiry
+        return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
+
     def _set_cookie_props(self, request, response):
         response.cookies[self.cookie_name] = request['session'].sid
         response.cookies[self.cookie_name]['httponly'] = self.httponly
 
         # Set expires and max-age unless we are using session cookies
         if not self.sessioncookie:
-            response.cookies[self.cookie_name]['expires'] = _calculate_expires(self.expiry)
+            response.cookies[self.cookie_name]['expires'] = self._calculate_expires(self.expiry)
             response.cookies[self.cookie_name]['max-age'] = self.expiry
 
         if self.domain:

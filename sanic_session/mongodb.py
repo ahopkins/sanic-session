@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from sanic_session.base import BaseSessionInterface
+import warnings
 
 try:
     from sanic_motor import BaseModel
@@ -61,14 +62,28 @@ class MongoDBSessionInterface(BaseSessionInterface):
             msg = "Please install Mongo dependencies: pip install sanic_session[mongo]"
             raise RuntimeError(msg)
 
-        self.expiry = expiry
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = True
-        self.sessioncookie = sessioncookie
-        self.samesite = samesite
         # prefix not needed for mongodb as mongodb uses uuid4 natively
-        self.prefix = ''
+        prefix = ''
+
+        if httponly is not True:
+            warnings.warn('''
+                httponly default arg has changed.
+                To spare you some debugging time, httponly is currently hardcoded as True.
+                This message will be removed with the next release. And ``httponly`` will 
+                no longer be hardcoded
+            ''', DeprecationWarning)
+
+        super().__init__(
+            expiry=expiry,
+            prefix=prefix,
+            cookie_name=cookie_name,
+            domain=domain,
+            # I'm gonna leave this as True because changing it might be hazardous.
+            # But this should be changed to __init__'s httponly kwarg instead of being hardcoded
+            httponly=True,
+            sessioncookie=sessioncookie,
+            samesite=samesite
+        )
 
         # set collection name
         _SessionModel.__coll__ = coll

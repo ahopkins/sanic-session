@@ -47,16 +47,17 @@ class MemcacheSessionInterface(BaseSessionInterface):
 
         # memcache has a maximum 30-day cache limit
         if expiry > 2592000:
-            self.expiry = 0
-        else:
-            self.expiry = expiry
+            expiry = 0
 
-        self.prefix = prefix
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = httponly
-        self.sessioncookie = sessioncookie
-        self.samesite = samesite
+        super().__init__(
+            expiry=expiry,
+            prefix=prefix,
+            cookie_name=cookie_name,
+            domain=domain,
+            httponly=httponly,
+            sessioncookie=sessioncookie,
+            samesite=samesite
+        )
 
     async def _get_value(self, prefix, sid):
         key = (self.prefix + sid).encode()

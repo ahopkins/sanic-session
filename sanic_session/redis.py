@@ -46,13 +46,16 @@ class RedisSessionInterface(BaseSessionInterface):
             raise RuntimeError("Please install asyncio_redis: pip install sanic_session[redis]")
 
         self.redis_getter = redis_getter
-        self.expiry = expiry
-        self.prefix = prefix
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = httponly
-        self.sessioncookie = sessioncookie
-        self.samesite = samesite
+
+        super().__init__(
+            expiry=expiry,
+            prefix=prefix,
+            cookie_name=cookie_name,
+            domain=domain,
+            httponly=httponly,
+            sessioncookie=sessioncookie,
+            samesite=samesite
+        )
 
     async def _get_value(self, prefix, key):
         redis_connection = await self.redis_getter()

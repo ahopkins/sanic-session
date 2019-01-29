@@ -13,4 +13,4 @@ matrix:
 install:
     - "python setup.py install"
     - "pip install -r dev_requirements.txt"
-script: pytest
+script: pytest -vs --cov sanic_session tests

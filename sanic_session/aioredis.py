@@ -43,13 +43,16 @@ class AIORedisSessionInterface(BaseSessionInterface):
             raise RuntimeError("Please install aioredis: pip install sanic_session[aioredis]")
 
         self.redis = redis
-        self.expiry = expiry
-        self.prefix = prefix
-        self.cookie_name = cookie_name
-        self.domain = domain
-        self.httponly = httponly
-        self.sessioncookie = sessioncookie
-        self.samesite = samesite
+
+        super().__init__(
+            expiry=expiry,
+            prefix=prefix,
+            cookie_name=cookie_name,
+            domain=domain,
+            httponly=httponly,
+            sessioncookie=sessioncookie,
+            samesite=samesite
+        )
 
     async def _get_value(self, prefix, sid):
         return await self.redis.get(self.prefix + sid)
