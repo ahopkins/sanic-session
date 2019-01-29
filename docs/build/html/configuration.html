@@ -1,29 +1,19 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Configuration &#8212; sanic_session</title>
-    
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Testing" href="testing.html" />
@@ -34,13 +24,14 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="configuration">
@@ -54,14 +45,36 @@
 <dt><strong>httponly</strong> (bool, optional):</dt>
 <dd>Adds the <cite>httponly</cite> flag to the session cookie. Defaults to True.</dd>
 <dt><strong>cookie_name</strong> (str, optional):</dt>
-<dd>Name used for the client cookie. Defaults to &#8220;session&#8221;.</dd>
+<dd>Name used for the client cookie. Defaults to “session”.</dd>
 <dt><strong>prefix</strong> (str, optional):</dt>
 <dd>Storage keys will take the format of <cite>prefix+&lt;session_id&gt;</cite>. Specify the prefix here.</dd>
+<dt><strong>sessioncookie</strong> (bool, optional):</dt>
+<dd>If enabled the browser will be instructed to delete the cookie when the browser is closed. This is done by omitting the <cite>max-age</cite> and <cite>expires</cite> headers when sending the cookie. The <cite>expiry</cite> configuration option will still be honored on the server side. This is option is disabled by default.</dd>
+<dt><strong>samesite</strong> (str, optional):</dt>
+<dd>One of ‘strict’ or ‘lax’. Defaults to None  <a class="reference external" href="https://www.owasp.org/index.php/SameSite">https://www.owasp.org/index.php/SameSite</a></dd>
+<dt><strong>session_name</strong> (str, optional):</dt>
+<dd><div class="first line-block">
+<div class="line">Name of the session that will be accessible through the request.</div>
+<div class="line">e.g. If <code class="docutils literal notranslate"><span class="pre">session_name</span></code> is <code class="docutils literal notranslate"><span class="pre">alt_session</span></code>, it should be accessed like that: <code class="docutils literal notranslate"><span class="pre">request['alt_session']</span></code></div>
+<div class="line">e.g. And if <code class="docutils literal notranslate"><span class="pre">session_name</span></code> is left to default, it should be accessed like that: <code class="docutils literal notranslate"><span class="pre">request['session']</span></code></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you run an application with 2 sessions/cookies. Be sure that they have different”</p>
+<blockquote class="last">
+<div><ol class="arabic simple">
+<li><code class="docutils literal notranslate"><span class="pre">cookie_name</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">prefix</span></code> (Only if the two cookies share the same store)</li>
+<li>And obviously, different: <code class="docutils literal notranslate"><span class="pre">session_name</span></code></li>
+</ol>
+</div></blockquote>
+</div>
+</dd>
 </dl>
-<p><strong>Example:</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">session_interface</span> <span class="o">=</span> <span class="n">InMemorySessionInterface</span><span class="p">(</span>
+<p><strong>Example 1:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">session_interface</span> <span class="o">=</span> <span class="n">InMemorySessionInterface</span><span class="p">(</span>
     <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;.example.com&#39;</span><span class="p">,</span> <span class="n">expiry</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-    <span class="n">httponly</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;sessionprefix:&quot;</span><span class="p">)</span>
+    <span class="n">httponly</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s2">&quot;cookie&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;sessionprefix:&quot;</span><span class="p">,</span>  <span class="n">samesite</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Will result in a session that:</p>
@@ -69,25 +82,52 @@
 <li>Will be valid only on <em>example.com</em>.</li>
 <li>Will never expire.</li>
 <li>Will be accessible by Javascript.</li>
-<li>Will be named &#8220;cookie&#8221; on the client.</li>
-<li>will be named &#8220;sessionprefix:&lt;sid&gt;&#8221; in the session store.</li>
+<li>Will be named “cookie” on the client.</li>
+<li>Will be named “sessionprefix:&lt;sid&gt;” in the session store.</li>
+<li>Will prevent the cookie from being sent by the browser to the target site in all cross-site browsing context, even when following a regular link.</li>
+</ul>
+<p><strong>Example 2:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">session_interface</span> <span class="o">=</span> <span class="n">InMemorySessionInterface</span><span class="p">(</span>
+    <span class="n">domain</span><span class="o">=</span><span class="s1">&#39;.example.com&#39;</span><span class="p">,</span> <span class="n">expiry</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span> <span class="n">sessioncookie</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">httponly</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s2">&quot;myapp&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;session:&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Will result in a session that:</p>
+<ul class="simple">
+<li>Will be valid only on <em>example.com</em>.</li>
+<li>Will expire on the server side after 1 hour.</li>
+<li>Will be deleted on the client when the user closes the browser.</li>
+<li>Will <em>not</em> be accessible by Javascript.</li>
+<li>Will be named “myapp” on the client.</li>
+<li>Will be named “session:&lt;sid&gt;” in the session store.</li>
 </ul>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul class="current">
+<h1 class="logo"><a href="index.html">sanic_session</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">sanic_session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="using_the_interfaces.html">Using the interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a></li>
 </ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -97,23 +137,26 @@
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/configuration.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -122,8 +165,8 @@
       &copy;2017, Suby Raman.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/configuration.rst.txt"

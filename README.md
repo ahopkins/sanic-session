@@ -23,6 +23,8 @@ or if you prefer `Pipenv`:
 
 Documentation is available at [sanic-session.readthedocs.io](http://sanic-session.readthedocs.io/en/latest/).
 
+Also, make sure you read [OWASP's Session Management Cheat Sheet](https://www.owasp.org/index.php/Session_Management_Cheat_Sheet) for some really useful info on session management
+
 ## Example
 
 A simple example uses the in-memory session interface.

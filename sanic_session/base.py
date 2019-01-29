@@ -19,7 +19,7 @@ class SessionDict(CallbackDict):
 class BaseSessionInterface(metaclass=abc.ABCMeta):
     # this flag show does this Interface need request/responce middleware hooks
 
-    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite):
+    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -27,9 +27,10 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         self.httponly = httponly
         self.sessioncookie = sessioncookie
         self.samesite = samesite
+        self.session_name = session_name
 
     def _delete_cookie(self, request, response):
-        response.cookies[self.cookie_name] = request['session'].sid
+        response.cookies[self.cookie_name] = request[self.session_name].sid
 
         # We set expires/max-age even for session cookies to force expiration
         response.cookies[self.cookie_name]['expires'] = 0
@@ -41,7 +42,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
 
     def _set_cookie_props(self, request, response):
-        response.cookies[self.cookie_name] = request['session'].sid
+        response.cookies[self.cookie_name] = request[self.session_name].sid
         response.cookies[self.cookie_name]['httponly'] = self.httponly
 
         # Set expires and max-age unless we are using session cookies
@@ -109,7 +110,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
                 session_dict = SessionDict(sid=sid)
 
         # attach the session data to the request, return it for convenience
-        request['session'] = session_dict
+        request[self.session_name] = session_dict
         return session_dict
 
     async def save(self, request, response) -> None:
@@ -128,14 +129,14 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         if 'session' not in request:
             return
 
-        key = (self.prefix + request['session'].sid)
-        if not request['session']:
+        key = (self.prefix + request[self.session_name].sid)
+        if not request[self.session_name]:
             await self._delete_key(key)
 
-            if request['session'].modified:
+            if request[self.session_name].modified:
                 self._delete_cookie(request, response)
             return
 
-        val = ujson.dumps(dict(request['session']))
+        val = ujson.dumps(dict(request[self.session_name]))
         await self._set_value(key, val)
         self._set_cookie_props(request, response)

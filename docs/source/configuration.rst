@@ -19,6 +19,19 @@ When initializing a session interface, you have a number of optional arguments f
     If enabled the browser will be instructed to delete the cookie when the browser is closed. This is done by omitting the `max-age` and `expires` headers when sending the cookie. The `expiry` configuration option will still be honored on the server side. This is option is disabled by default.
 **samesite** (str, optional):
     One of 'strict' or 'lax'. Defaults to None  https://www.owasp.org/index.php/SameSite
+**session_name** (str, optional):
+    | Name of the session that will be accessible through the request.
+    | e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request['alt_session']``
+    | e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request['session']``
+
+    .. note::
+
+        If you choose to build your application using more than one session object, make sure that they have different:
+
+            1. ``cookie_name``
+            2. ``prefix`` (Only if the two cookies share the same store)
+            3. And obviously, different: ``session_name``
+
 
 **Example 1:**
 

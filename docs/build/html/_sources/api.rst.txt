@@ -20,3 +20,10 @@ RedisSessionInterface
 
 .. autoclass:: sanic_session.RedisSessionInterface
     :members:
+
+
+AIORedisSessionInterface
+-----------------------------------------------
+
+.. autoclass:: sanic_session.AIORedisSessionInterface
+    :members:

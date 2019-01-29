@@ -30,7 +30,8 @@ class MongoDBSessionInterface(BaseSessionInterface):
             httponly: bool=True,
             cookie_name: str='session',
             sessioncookie: bool=False,
-            samesite: str=None):
+            samesite: str=None,
+            session_name: str='session'):
 
         """Initializes the interface for storing client sessions in MongoDB.
 
@@ -56,7 +57,11 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 site in all cross-site browsing context, even when following a regular link.
                 One of ('lax', 'strict')
                 Default: None
-
+            session_name (str, optional):
+                Name of the session that will be accessible through the request.
+                e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request['alt_session']``
+                e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request['session']``
+                Default: 'session'
         """
         if _SessionModel is None:
             msg = "Please install Mongo dependencies: pip install sanic_session[mongo]"
@@ -82,7 +87,8 @@ class MongoDBSessionInterface(BaseSessionInterface):
             # But this should be changed to __init__'s httponly kwarg instead of being hardcoded
             httponly=True,
             sessioncookie=sessioncookie,
-            samesite=samesite
+            samesite=samesite,
+            session_name=session_name,
         )
 
         # set collection name

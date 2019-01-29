@@ -1,6 +1,9 @@
 import time
+from sanic import Sanic
 from sanic.response import text
 from sanic_session.memory import InMemorySessionInterface
+from sanic_session import Session
+from sanic_session.base import SessionDict
 import pytest
 import uuid
 import ujson
@@ -282,3 +285,42 @@ async def test_samesite_dict_set_None(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].get('samesite') is SAMESITE
+
+@pytest.mark.asyncio
+async def test_two_sessions(mocker, mock_dict, event_loop):
+
+    COOKIE_NAME_1 = 'cookie_uno'
+    COOKIE_NAME_2 = 'cookie_dos'
+
+    PREFIX_1 = 'prefix_uno'
+    PREFIX_2 = 'prefix_dos'
+
+    SESSION_NAME_1 = 'session_uno'
+    SESSION_NAME_2 = 'session_dos'
+
+    request = mock_dict()
+    response = text('')
+    request.cookies = {}
+
+    session_interface_1 = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME_1,
+        prefix=PREFIX_1,
+        session_name=SESSION_NAME_1,
+    )
+
+    session_interface_2 = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME_2,
+        prefix=PREFIX_2,
+        session_name=SESSION_NAME_2,
+    )
+
+    await session_interface_1.open(request)
+    await session_interface_1.save(request, response)
+    await session_interface_2.open(request)
+    await session_interface_2.save(request, response)
+
+    assert isinstance(request[SESSION_NAME_1], SessionDict)
+    assert isinstance(request[SESSION_NAME_2], SessionDict)
+
+    assert request[SESSION_NAME_1] is not request[SESSION_NAME_2]
+    assert request[SESSION_NAME_1].sid != request[SESSION_NAME_2].sid

@@ -12,7 +12,8 @@ class AIORedisSessionInterface(BaseSessionInterface):
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
-            sessioncookie: bool=False, samesite: str=None):
+            sessioncookie: bool=False, samesite: str=None, 
+            session_name: str='session'):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -38,6 +39,11 @@ class AIORedisSessionInterface(BaseSessionInterface):
                 site in all cross-site browsing context, even when following a regular link.
                 One of ('lax', 'strict')
                 Default: None
+            session_name (str, optional):
+                Name of the session that will be accessible through the request.
+                e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request['alt_session']``
+                e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request['session']``
+                Default: 'session'
         """
         if aioredis is None:
             raise RuntimeError("Please install aioredis: pip install sanic_session[aioredis]")
@@ -51,7 +57,8 @@ class AIORedisSessionInterface(BaseSessionInterface):
             domain=domain,
             httponly=httponly,
             sessioncookie=sessioncookie,
-            samesite=samesite
+            samesite=samesite,
+            session_name=session_name,
         )
 
     async def _get_value(self, prefix, sid):
