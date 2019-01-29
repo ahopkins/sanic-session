@@ -12,7 +12,7 @@ class AIORedisSessionInterface(BaseSessionInterface):
             domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str='session',
             prefix: str='session:',
-            sessioncookie: bool=False, samesite: str=None, 
+            sessioncookie: bool=False, samesite: str=None,
             session_name: str='session'):
         """Initializes a session interface backed by Redis.
 

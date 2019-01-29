@@ -7,7 +7,7 @@ class InMemorySessionInterface(BaseSessionInterface):
             self, domain: str=None, expiry: int = 2592000,
             httponly: bool=True, cookie_name: str = 'session',
             prefix: str='session:',
-            sessioncookie: bool=False, samesite: str=None, 
+            sessioncookie: bool=False, samesite: str=None,
             session_name='session'):
 
         super().__init__(
