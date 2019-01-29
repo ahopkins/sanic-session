@@ -6,3 +6,4 @@ aioredis>=1.0.0
 asyncio_redis
 sanic_motor
 aiomcache>=0.5.2
+pytest-cov
