@@ -50,11 +50,3 @@ if __name__ == "__main__":
 ```
 
 Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](http://sanic-session.readthedocs.io/en/latest/using_the_interfaces.html).
-
-## Testing
-
-    $ cd sanic_session
-    $ virtualenv .
-    $ source bin/activate
-    $ python3.7 -m pip install -r dev_requirements.txt
-    $ pytest -vs --cov sanic_session tests

@@ -11,6 +11,6 @@ matrix:
     - python: 3.5
       dist: xenial
 install:
-    - "python setup.py install"
-    - "pip install -r dev_requirements.txt"
-script: pytest -vs --cov sanic_session tests
+  pip install tox-travis
+script: 
+  tox
