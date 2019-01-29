@@ -1,7 +1,0 @@
-sanic_session
-=============
-
-.. toctree::
-   :maxdepth: 2
-
-   sanic_session
