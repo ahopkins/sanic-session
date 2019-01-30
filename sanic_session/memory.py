@@ -4,10 +4,10 @@ from sanic_session.utils import ExpiringDict
 
 class InMemorySessionInterface(BaseSessionInterface):
     def __init__(
-            self, domain: str=None, expiry: int = 2592000,
-            httponly: bool=True, cookie_name: str = 'session',
-            prefix: str='session:',
-            sessioncookie: bool=False, samesite: str=None,
+            self, domain: str = None, expiry: int = 2592000,
+            httponly: bool = True, cookie_name: str = 'session',
+            prefix: str = 'session:',
+            sessioncookie: bool = False, samesite: str = None,
             session_name='session'):
 
         super().__init__(

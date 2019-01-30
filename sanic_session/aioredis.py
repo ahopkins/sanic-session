@@ -9,11 +9,11 @@ except ImportError:
 class AIORedisSessionInterface(BaseSessionInterface):
     def __init__(
             self, redis,
-            domain: str=None, expiry: int = 2592000,
-            httponly: bool=True, cookie_name: str='session',
-            prefix: str='session:',
-            sessioncookie: bool=False, samesite: str=None,
-            session_name: str='session'):
+            domain: str = None, expiry: int = 2592000,
+            httponly: bool = True, cookie_name: str = 'session',
+            prefix: str = 'session:',
+            sessioncookie: bool = False, samesite: str = None,
+            session_name: str = 'session'):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -46,7 +46,8 @@ class AIORedisSessionInterface(BaseSessionInterface):
                 Default: 'session'
         """
         if aioredis is None:
-            raise RuntimeError("Please install aioredis: pip install sanic_session[aioredis]")
+            raise RuntimeError(
+                "Please install aioredis: pip install sanic_session[aioredis]")
 
         self.redis = redis
 

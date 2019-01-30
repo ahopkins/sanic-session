@@ -7,6 +7,7 @@ class _Missing(object):
     Copyright (c) 2015 by Armin Ronacher and contributors.  See AUTHORS
     in FLASK_LICENSE for more details.
     """
+
     def __repr__(self):
         return 'no value'
 
