@@ -9,5 +9,5 @@ lib/
 *.egg*
 .cache
 __pycache__
-build
+*/build
 dist

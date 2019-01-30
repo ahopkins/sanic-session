@@ -24,7 +24,7 @@ class Session:
         if not hasattr(app, 'extensions'):
             app.extensions = {}
 
-        app.extensions[interface.session_name] = self  # Defaults to 'session'
+        app.extensions[interface.session_name] = self  # session_name defaults to 'session'
 
         # @app.middleware('request')
         async def add_session_to_request(request):
