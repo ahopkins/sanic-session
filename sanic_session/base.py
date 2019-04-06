@@ -1,4 +1,5 @@
 import time
+import datetime
 import abc
 import ujson
 import uuid
@@ -19,8 +20,7 @@ class SessionDict(CallbackDict):
 class BaseSessionInterface(metaclass=abc.ABCMeta):
     # this flag show does this Interface need request/responce middleware hooks
 
-    def __init__(self, expiry, prefix, cookie_name, domain,
-                 httponly, sessioncookie, samesite, session_name):
+    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -34,13 +34,13 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name] = request[self.session_name].sid
 
         # We set expires/max-age even for session cookies to force expiration
-        response.cookies[self.cookie_name]['expires'] = 0
+        response.cookies[self.cookie_name]['expires'] = datetime.datetime.now()
         response.cookies[self.cookie_name]['max-age'] = 0
 
     @staticmethod
     def _calculate_expires(expiry):
         expires = time.time() + expiry
-        return time.strftime("%a, %d-%b-%Y %T GMT", time.gmtime(expires))
+        return datetime.datetime.fromtimestamp(expires)
 
     def _set_cookie_props(self, request, response):
         response.cookies[self.cookie_name] = request[self.session_name].sid
@@ -48,8 +48,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
         # Set expires and max-age unless we are using session cookies
         if not self.sessioncookie:
-            response.cookies[self.cookie_name]['expires'] = self._calculate_expires(
-                self.expiry)
+            response.cookies[self.cookie_name]['expires'] = self._calculate_expires(self.expiry)
             response.cookies[self.cookie_name]['max-age'] = self.expiry
 
         if self.domain:
