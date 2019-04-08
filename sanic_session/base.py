@@ -34,7 +34,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name] = request[self.session_name].sid
 
         # We set expires/max-age even for session cookies to force expiration
-        response.cookies[self.cookie_name]['expires'] = datetime.datetime.now()
+        response.cookies[self.cookie_name]['expires'] = datetime.datetime.utcnow()
         response.cookies[self.cookie_name]['max-age'] = 0
 
     @staticmethod

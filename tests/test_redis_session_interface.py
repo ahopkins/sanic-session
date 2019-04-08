@@ -201,7 +201,7 @@ async def test_should_expire_redis_cookies_if_modified(mock_dict, mock_redis):
     request['session'].clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]['max-age'] == 0
-    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.now()
+    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.utcnow()
 
 
 @pytest.mark.asyncio
@@ -250,7 +250,7 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_redis):
 
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
-    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.now()
+    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.utcnow()
 
 
 @pytest.mark.asyncio
@@ -299,4 +299,4 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]['max-age'] == 0
-    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.now()
+    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.utcnow()
