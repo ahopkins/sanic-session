@@ -1,4 +1,5 @@
 import time
+import datetime
 from sanic.response import text
 from sanic_session.memcache import MemcacheSessionInterface
 import pytest
@@ -196,7 +197,7 @@ async def test_should_expire_memcache_cookies_if_modified(mock_dict, mock_memcac
     request['session'].clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]['max-age'] == 0
-    assert response.cookies[COOKIE_NAME]['expires'] == 0
+    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.now()
 
 
 @pytest.mark.asyncio
@@ -245,7 +246,7 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_memcache):
 
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]['max-age'] == 2592000
-    assert response.cookies[COOKIE_NAME]['expires'] == "Sun, 02-Apr-2017 21:27:42 GMT"
+    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.now()
 
 
 @pytest.mark.asyncio
@@ -293,4 +294,4 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict, mo
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]['max-age'] == 0
-    assert response.cookies[COOKIE_NAME]['expires'] == 0
+    assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.now()
