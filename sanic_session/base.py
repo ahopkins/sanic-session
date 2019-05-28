@@ -71,7 +71,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _delete_key(self, prefix: str, key: str):
+    async def _delete_key(self, key: str):
         '''Delete key from datastore'''
         raise NotImplementedError
 
