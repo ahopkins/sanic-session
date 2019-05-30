@@ -20,7 +20,7 @@ class SessionDict(CallbackDict):
 class BaseSessionInterface(metaclass=abc.ABCMeta):
     # this flag show does this Interface need request/responce middleware hooks
 
-    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name):
+    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name, secure):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -29,6 +29,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         self.sessioncookie = sessioncookie
         self.samesite = samesite
         self.session_name = session_name
+        self.secure = secure
 
     def _delete_cookie(self, request, response):
         response.cookies[self.cookie_name] = request[self.session_name].sid
@@ -56,6 +57,9 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
         if self.samesite is not None:
             response.cookies[self.cookie_name]['samesite'] = self.samesite
+
+        if self.secure:
+            response.cookies[self.cookie_name]['secure'] = True
 
     @abc.abstractmethod
     async def _get_value(self, prefix: str, sid: str):

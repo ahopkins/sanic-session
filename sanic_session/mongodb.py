@@ -31,7 +31,8 @@ class MongoDBSessionInterface(BaseSessionInterface):
             cookie_name: str = 'session',
             sessioncookie: bool = False,
             samesite: str = None,
-            session_name: str = 'session'):
+            session_name: str = 'session',
+            secure: bool = False):
         """Initializes the interface for storing client sessions in MongoDB.
 
         Args:
@@ -65,6 +66,8 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 e.g. And if ``session_name`` is left to default, it should be
                 accessed like that: ``request['session']``
                 Default: 'session'
+            secure (bool, optional):
+                Adds the `Secure` flag to the session cookie.
         """
         if _SessionModel is None:
             raise RuntimeError("Please install Mongo dependencies: "
@@ -93,6 +96,7 @@ class MongoDBSessionInterface(BaseSessionInterface):
             sessioncookie=sessioncookie,
             samesite=samesite,
             session_name=session_name,
+            secure=secure
         )
 
         # set collection name

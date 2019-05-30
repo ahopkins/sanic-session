@@ -15,7 +15,8 @@ class RedisSessionInterface(BaseSessionInterface):
             prefix: str = 'session:',
             sessioncookie: bool = False,
             samesite: str = None,
-            session_name: str = 'session'):
+            session_name: str = 'session',
+            secure: bool = False):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -51,6 +52,8 @@ class RedisSessionInterface(BaseSessionInterface):
                 e.g. And if ``session_name`` is left to default, it should be
                 accessed like that: ``request['session']``
                 Default: 'session'
+            secure (bool, optional):
+                Adds the `Secure` flag to the session cookie.
         """
         if asyncio_redis is None:
             raise RuntimeError(
@@ -67,6 +70,7 @@ class RedisSessionInterface(BaseSessionInterface):
             sessioncookie=sessioncookie,
             samesite=samesite,
             session_name=session_name,
+            secure=secure
         )
 
     async def _get_value(self, prefix, key):

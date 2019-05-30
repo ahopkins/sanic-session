@@ -8,7 +8,7 @@ class InMemorySessionInterface(BaseSessionInterface):
             httponly: bool = True, cookie_name: str = 'session',
             prefix: str = 'session:',
             sessioncookie: bool = False, samesite: str = None,
-            session_name='session'):
+            session_name='session', secure: bool = False):
 
         super().__init__(
             expiry=expiry,
@@ -19,6 +19,7 @@ class InMemorySessionInterface(BaseSessionInterface):
             sessioncookie=sessioncookie,
             samesite=samesite,
             session_name=session_name,
+            secure=secure,
         )
         self.session_store = ExpiringDict()
 

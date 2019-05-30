@@ -13,7 +13,8 @@ class AIORedisSessionInterface(BaseSessionInterface):
             httponly: bool = True, cookie_name: str = 'session',
             prefix: str = 'session:',
             sessioncookie: bool = False, samesite: str = None,
-            session_name: str = 'session'):
+            session_name: str = 'session',
+            secure: bool = False):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -44,6 +45,8 @@ class AIORedisSessionInterface(BaseSessionInterface):
                 e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request['alt_session']``
                 e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request['session']``
                 Default: 'session'
+            secure (bool, optional):
+                Adds the `Secure` flag to the session cookie.
         """
         if aioredis is None:
             raise RuntimeError(
@@ -60,6 +63,7 @@ class AIORedisSessionInterface(BaseSessionInterface):
             sessioncookie=sessioncookie,
             samesite=samesite,
             session_name=session_name,
+            secure=secure
         )
 
     async def _get_value(self, prefix, sid):
