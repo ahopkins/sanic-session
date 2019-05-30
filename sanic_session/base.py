@@ -18,7 +18,7 @@ class SessionDict(CallbackDict):
 
 
 class BaseSessionInterface(metaclass=abc.ABCMeta):
-    # this flag show does this Interface need request/responce middleware hooks
+    # this flag show does this Interface need request/response middleware hooks
 
     def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name):
         self.expiry = expiry

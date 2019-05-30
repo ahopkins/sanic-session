@@ -1,3 +1,5 @@
+import warnings
+
 from sanic_session.base import BaseSessionInterface
 
 try:
@@ -56,8 +58,8 @@ class MemcacheSessionInterface(BaseSessionInterface):
 
         self.memcache_connection = memcache_connection
 
-        # memcache has a maximum 30-day cache limit
         if expiry > 2592000:
+            warnings.warn("Memcache has a maximum 30-day cache limit")
             expiry = 0
 
         super().__init__(
