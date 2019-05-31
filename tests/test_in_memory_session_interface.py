@@ -244,6 +244,7 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     assert response.cookies[COOKIE_NAME]['max-age'] == 0
     assert response.cookies[COOKIE_NAME]['expires'] < datetime.datetime.utcnow()
 
+
 @pytest.mark.asyncio
 async def test_samesite_dict_set_lax(mocker, mock_dict):
     SAMESITE = 'lax'
@@ -264,6 +265,7 @@ async def test_samesite_dict_set_lax(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]['samesite'] == SAMESITE
+
 
 @pytest.mark.asyncio
 async def test_samesite_dict_set_None(mocker, mock_dict):
@@ -286,6 +288,7 @@ async def test_samesite_dict_set_None(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].get('samesite') is SAMESITE
+
 
 @pytest.mark.asyncio
 async def test_two_sessions(mocker, mock_dict, event_loop):

@@ -18,7 +18,7 @@ class SessionDict(CallbackDict):
 
 
 class BaseSessionInterface(metaclass=abc.ABCMeta):
-    # this flag show does this Interface need request/responce middleware hooks
+    # this flag show does this Interface need request/response middleware hooks
 
     def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name, secure):
         self.expiry = expiry
@@ -75,7 +75,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _delete_key(self, prefix: str, key: str):
+    async def _delete_key(self, key: str):
         '''Delete key from datastore'''
         raise NotImplementedError
 
