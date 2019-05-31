@@ -11,6 +11,18 @@ extras_require = {
     "redis": ["asyncio_redis"],
     "mongo": ["sanic_motor", "pymongo"],
     "aiomcache": ["aiomcache>=0.5.2"],
+    "dev": [
+        "pytest",
+        "aiohttp",
+        "pytest-asyncio",
+        "pytest-mock",
+        "pytest-cov",
+        "wheel",
+        "black;python_version>='3.6'",
+        "sphinx",
+        "sphinxcontrib-fulltoc",
+        "flake8",
+    ]
 }
 
 
