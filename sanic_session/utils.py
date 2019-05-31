@@ -9,10 +9,10 @@ class _Missing(object):
     """
 
     def __repr__(self):
-        return 'no value'
+        return "no value"
 
     def __reduce__(self):
-        return '_missing'
+        return "_missing"
 
 
 _missing = _Missing()
@@ -32,6 +32,7 @@ class UpdateDictMixin(object):
             if self.on_update is not None:
                 self.on_update(self)
             return rv
+
         oncall.__name__ = name
         return oncall
 
@@ -52,11 +53,11 @@ class UpdateDictMixin(object):
             self.on_update(self)
         return rv
 
-    __setitem__ = calls_update('__setitem__')
-    __delitem__ = calls_update('__delitem__')
-    clear = calls_update('clear')
-    popitem = calls_update('popitem')
-    update = calls_update('update')
+    __setitem__ = calls_update("__setitem__")
+    __delitem__ = calls_update("__delitem__")
+    clear = calls_update("clear")
+    popitem = calls_update("popitem")
+    update = calls_update("update")
     del calls_update
 
 
@@ -75,14 +76,11 @@ class CallbackDict(UpdateDictMixin, dict):
         self.on_update = on_update
 
     def __repr__(self):
-        return '<%s %s>' % (
-            self.__class__.__name__,
-            dict.__repr__(self)
-        )
+        return "<%s %s>" % (self.__class__.__name__, dict.__repr__(self))
 
 
 class ExpiringDict(dict):
-    def __init__(self, prefix=''):
+    def __init__(self, prefix=""):
         self.prefix = prefix
         super().__init__()
         self.expiry_times = {}

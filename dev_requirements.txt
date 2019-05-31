@@ -7,3 +7,4 @@ asyncio_redis
 sanic_motor
 aiomcache>=0.5.2
 pytest-cov
+wheel
