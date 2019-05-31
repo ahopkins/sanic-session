@@ -16,7 +16,9 @@ try:
             data:
                 User's session data
         """
+
         pass
+
 
 except ImportError:  # pragma: no cover
     _SessionModel = None
@@ -24,15 +26,18 @@ except ImportError:  # pragma: no cover
 
 class MongoDBSessionInterface(BaseSessionInterface):
     def __init__(
-            self, app, coll: str = 'session',
-            domain: str = None,
-            expiry: int = 30 * 24 * 60 * 60,
-            httponly: bool = True,
-            cookie_name: str = 'session',
-            sessioncookie: bool = False,
-            samesite: str = None,
-            session_name: str = 'session',
-            secure: bool = False):
+        self,
+        app,
+        coll: str = "session",
+        domain: str = None,
+        expiry: int = 30 * 24 * 60 * 60,
+        httponly: bool = True,
+        cookie_name: str = "session",
+        sessioncookie: bool = False,
+        samesite: str = None,
+        session_name: str = "session",
+        secure: bool = False,
+    ):
         """Initializes the interface for storing client sessions in MongoDB.
 
         Args:
@@ -70,19 +75,23 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 Adds the `Secure` flag to the session cookie.
         """
         if _SessionModel is None:
-            raise RuntimeError("Please install Mongo dependencies: "
-                               "pip install sanic_session[mongo]")
+            raise RuntimeError(
+                "Please install Mongo dependencies: " "pip install sanic_session[mongo]"
+            )
 
         # prefix not needed for mongodb as mongodb uses uuid4 natively
-        prefix = ''
+        prefix = ""
 
         if httponly is not True:
-            warnings.warn('''
+            warnings.warn(
+                """
                 httponly default arg has changed.
                 To spare you some debugging time, httponly is currently
                 hardcoded as True. This message will be removed with the
                 next release. And ``httponly`` will no longer be hardcoded
-            ''', DeprecationWarning)
+            """,
+                DeprecationWarning,
+            )
 
         super().__init__(
             expiry=expiry,
@@ -96,13 +105,13 @@ class MongoDBSessionInterface(BaseSessionInterface):
             sessioncookie=sessioncookie,
             samesite=samesite,
             session_name=session_name,
-            secure=secure
+            secure=secure,
         )
 
         # set collection name
         _SessionModel.__coll__ = coll
 
-        @app.listener('after_server_start')
+        @app.listener("after_server_start")
         async def apply_session_indexes(app, loop):
             """Create indexes in session collection
             if doesn't exist.
@@ -113,24 +122,18 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 expiry:
                     For document expiration.
             """
-            await _SessionModel.create_index('sid')
-            await _SessionModel.create_index('expiry', expireAfterSeconds=0)
+            await _SessionModel.create_index("sid")
+            await _SessionModel.create_index("expiry", expireAfterSeconds=0)
 
     async def _get_value(self, prefix, key):
-        value = await _SessionModel.find_one({'sid': key}, as_raw=True)
-        return value['data'] if value else None
+        value = await _SessionModel.find_one({"sid": key}, as_raw=True)
+        return value["data"] if value else None
 
     async def _delete_key(self, key):
-        await _SessionModel.delete_one({'sid': key})
+        await _SessionModel.delete_one({"sid": key})
 
     async def _set_value(self, key, data):
         expiry = datetime.utcnow() + timedelta(seconds=self.expiry)
         await _SessionModel.replace_one(
-            {'sid': key},
-            {
-                'sid': key,
-                'expiry': expiry,
-                'data': data
-            },
-            upsert=True
+            {"sid": key}, {"sid": key, "expiry": expiry, "data": data}, upsert=True
         )

@@ -4,11 +4,17 @@ from sanic_session.utils import ExpiringDict
 
 class InMemorySessionInterface(BaseSessionInterface):
     def __init__(
-            self, domain: str = None, expiry: int = 2592000,
-            httponly: bool = True, cookie_name: str = 'session',
-            prefix: str = 'session:',
-            sessioncookie: bool = False, samesite: str = None,
-            session_name='session', secure: bool = False):
+        self,
+        domain: str = None,
+        expiry: int = 2592000,
+        httponly: bool = True,
+        cookie_name: str = "session",
+        prefix: str = "session:",
+        sessioncookie: bool = False,
+        samesite: str = None,
+        session_name="session",
+        secure: bool = False,
+    ):
 
         super().__init__(
             expiry=expiry,
@@ -31,7 +37,4 @@ class InMemorySessionInterface(BaseSessionInterface):
             self.session_store.delete(key)
 
     async def _set_value(self, key, data):
-        self.session_store.set(
-            key, data,
-            self.expiry
-        )
+        self.session_store.set(key, data, self.expiry)

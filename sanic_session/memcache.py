@@ -10,13 +10,18 @@ except ImportError:  # pragma: no cover
 
 class MemcacheSessionInterface(BaseSessionInterface):
     def __init__(
-            self, memcache_connection,
-            domain: str = None, expiry: int = 2592000,
-            httponly: bool = True, cookie_name: str = 'session',
-            prefix: str = 'session:',
-            sessioncookie: bool = False, samesite: str = None,
-            session_name: str = 'session',
-            secure: bool = False):
+        self,
+        memcache_connection,
+        domain: str = None,
+        expiry: int = 2592000,
+        httponly: bool = True,
+        cookie_name: str = "session",
+        prefix: str = "session:",
+        sessioncookie: bool = False,
+        samesite: str = None,
+        session_name: str = "session",
+        secure: bool = False,
+    ):
         """Initializes the interface for storing client sessions in memcache.
         Requires a client object establised with `asyncio_memcache`.
 
@@ -56,8 +61,8 @@ class MemcacheSessionInterface(BaseSessionInterface):
         """
         if aiomcache is None:
             raise RuntimeError(
-                "Please install aiomcache: pip install "
-                "sanic_session[aiomcache]")
+                "Please install aiomcache: pip install " "sanic_session[aiomcache]"
+            )
 
         self.memcache_connection = memcache_connection
 
@@ -87,6 +92,5 @@ class MemcacheSessionInterface(BaseSessionInterface):
 
     async def _set_value(self, key, data):
         return await self.memcache_connection.set(
-            key.encode(), data.encode(),
-            exptime=self.expiry
+            key.encode(), data.encode(), exptime=self.expiry
         )

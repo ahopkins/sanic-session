@@ -20,7 +20,18 @@ class SessionDict(CallbackDict):
 class BaseSessionInterface(metaclass=abc.ABCMeta):
     # this flag show does this Interface need request/response middleware hooks
 
-    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name, secure):
+    def __init__(
+        self,
+        expiry,
+        prefix,
+        cookie_name,
+        domain,
+        httponly,
+        sessioncookie,
+        samesite,
+        session_name,
+        secure,
+    ):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -35,8 +46,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         response.cookies[self.cookie_name] = request[self.session_name].sid
 
         # We set expires/max-age even for session cookies to force expiration
-        response.cookies[self.cookie_name]['expires'] = datetime.datetime.utcnow()
-        response.cookies[self.cookie_name]['max-age'] = 0
+        response.cookies[self.cookie_name]["expires"] = datetime.datetime.utcnow()
+        response.cookies[self.cookie_name]["max-age"] = 0
 
     @staticmethod
     def _calculate_expires(expiry):
@@ -45,25 +56,27 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
     def _set_cookie_props(self, request, response):
         response.cookies[self.cookie_name] = request[self.session_name].sid
-        response.cookies[self.cookie_name]['httponly'] = self.httponly
+        response.cookies[self.cookie_name]["httponly"] = self.httponly
 
         # Set expires and max-age unless we are using session cookies
         if not self.sessioncookie:
-            response.cookies[self.cookie_name]['expires'] = self._calculate_expires(self.expiry)
-            response.cookies[self.cookie_name]['max-age'] = self.expiry
+            response.cookies[self.cookie_name]["expires"] = self._calculate_expires(
+                self.expiry
+            )
+            response.cookies[self.cookie_name]["max-age"] = self.expiry
 
         if self.domain:
-            response.cookies[self.cookie_name]['domain'] = self.domain
+            response.cookies[self.cookie_name]["domain"] = self.domain
 
         if self.samesite is not None:
-            response.cookies[self.cookie_name]['samesite'] = self.samesite
+            response.cookies[self.cookie_name]["samesite"] = self.samesite
 
         if self.secure:
-            response.cookies[self.cookie_name]['secure'] = True
+            response.cookies[self.cookie_name]["secure"] = True
 
     @abc.abstractmethod
     async def _get_value(self, prefix: str, sid: str):
-        '''
+        """
         Get value from datastore. Specific implementation for each datastore.
 
         Args:
@@ -71,17 +84,17 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
                 A prefix for the key, useful to namespace keys.
             sid:
                 a uuid in hex string
-        '''
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
     async def _delete_key(self, key: str):
-        '''Delete key from datastore'''
+        """Delete key from datastore"""
         raise NotImplementedError
 
     @abc.abstractmethod
     async def _set_value(self, key: str, data: SessionDict):
-        '''Set value for datastore'''
+        """Set value for datastore"""
         raise NotImplementedError
 
     async def open(self, request) -> SessionDict:
@@ -131,10 +144,10 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         Returns:
             None
         """
-        if 'session' not in request:
+        if "session" not in request:
             return
 
-        key = (self.prefix + request[self.session_name].sid)
+        key = self.prefix + request[self.session_name].sid
         if not request[self.session_name]:
             await self._delete_key(key)
 

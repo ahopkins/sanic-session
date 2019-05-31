@@ -9,14 +9,18 @@ except ImportError:
 
 class RedisSessionInterface(BaseSessionInterface):
     def __init__(
-            self, redis_getter: Callable,
-            domain: str = None, expiry: int = 2592000,
-            httponly: bool = True, cookie_name: str = 'session',
-            prefix: str = 'session:',
-            sessioncookie: bool = False,
-            samesite: str = None,
-            session_name: str = 'session',
-            secure: bool = False):
+        self,
+        redis_getter: Callable,
+        domain: str = None,
+        expiry: int = 2592000,
+        httponly: bool = True,
+        cookie_name: str = "session",
+        prefix: str = "session:",
+        sessioncookie: bool = False,
+        samesite: str = None,
+        session_name: str = "session",
+        secure: bool = False,
+    ):
         """Initializes a session interface backed by Redis.
 
         Args:
@@ -57,7 +61,8 @@ class RedisSessionInterface(BaseSessionInterface):
         """
         if asyncio_redis is None:
             raise RuntimeError(
-                "Please install asyncio_redis: pip install sanic_session[redis]")
+                "Please install asyncio_redis: pip install sanic_session[redis]"
+            )
 
         self.redis_getter = redis_getter
 
@@ -70,7 +75,7 @@ class RedisSessionInterface(BaseSessionInterface):
             sessioncookie=sessioncookie,
             samesite=samesite,
             session_name=session_name,
-            secure=secure
+            secure=secure,
         )
 
     async def _get_value(self, prefix, key):
