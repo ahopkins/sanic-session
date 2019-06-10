@@ -16,11 +16,12 @@ __all__ = (
 
 class Session:
     def __init__(self, app=None, interface=None):
-        self.interface = interface or InMemorySessionInterface()
+        self.interface = None
         if app:
-            self.init_app(app)
+            self.init_app(app, interface)
 
-    def init_app(self, app):
+    def init_app(self, app, interface):
+        self.interface = interface or InMemorySessionInterface()
         if not hasattr(app, "extensions"):
             app.extensions = {}
 
