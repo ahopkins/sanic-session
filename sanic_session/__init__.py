@@ -3,7 +3,6 @@ from .redis import RedisSessionInterface
 from .memory import InMemorySessionInterface
 from .mongodb import MongoDBSessionInterface
 from .aioredis import AIORedisSessionInterface
-from .base import BaseSessionInterface
 
 __all__ = (
     "MemcacheSessionInterface",
@@ -17,17 +16,16 @@ __all__ = (
 
 class Session:
     def __init__(self, app=None, interface=None):
-        self.interface = interface or InMemorySessionInterface()
+        self.interface = None
         if app:
-            self.init_app(app)
+            self.init_app(app, interface)
 
-    def init_app(self, app):
+    def init_app(self, app, interface):
+        self.interface = interface or InMemorySessionInterface()
         if not hasattr(app, "extensions"):
             app.extensions = {}
 
-        app.extensions[
-            self.interface.session_name
-        ] = self  # session_name defaults to 'session'
+        app.extensions[self.interface.session_name] = self  # session_name defaults to 'session'
 
         # @app.middleware('request')
         async def add_session_to_request(request):
