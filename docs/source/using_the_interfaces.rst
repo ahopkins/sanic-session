@@ -10,9 +10,9 @@ For now project has set of different interfaces. You can install each manually o
 Other supported backend keywords:
 
 - :code:`aioredis` (dependency 'aioredis'),
-- :code:`redis' ('asyncio_redis'),
-- :code:`mongo' ('sanic_motor' and 'pymongo'),
-- :code:`aiomcache' ('aiomcache')
+- :code:`redis` ('asyncio_redis'),
+- :code:`mongo` ('sanic_motor' and 'pymongo'),
+- :code:`aiomcache` ('aiomcache')
 
 
 Redis (asyncio_redis)
