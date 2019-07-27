@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 # Set requirements here
-requirements = ("sanic", "ujson")
+requirements = ("sanic<=18.12.0;python_version<='3.5'", "sanic;python_version>'3.5'",  "ujson")
 
 extras_require = {
     "aioredis": ["aioredis>=1.0.0"],
