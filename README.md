@@ -57,3 +57,5 @@ if __name__ == "__main__":
 ```
 
 Examples of using redis and memcache backed sessions can be found in the documentation, under [Using the Interfaces](http://sanic-session.readthedocs.io/en/latest/using_the_interfaces.html).
+
+<p align="center">&mdash; ⭐️ &mdash;</p>
