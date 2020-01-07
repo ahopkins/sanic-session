@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from sanic_session.base import BaseSessionInterface
 import warnings
+from sanic_session.base import BaseSessionInterface
 
 try:
     from sanic_motor import BaseModel
@@ -75,7 +75,9 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 Adds the `Secure` flag to the session cookie.
         """
         if _SessionModel is None:
-            raise RuntimeError("Please install Mongo dependencies: " "pip install sanic_session[mongo]")
+            raise RuntimeError(
+                "Please install Mongo dependencies: " "pip install sanic_session[mongo]"
+            )
 
         # prefix not needed for mongodb as mongodb uses uuid4 natively
         prefix = ""
@@ -132,4 +134,6 @@ class MongoDBSessionInterface(BaseSessionInterface):
 
     async def _set_value(self, key, data):
         expiry = datetime.utcnow() + timedelta(seconds=self.expiry)
-        await _SessionModel.replace_one({"sid": key}, {"sid": key, "expiry": expiry, "data": data}, upsert=True)
+        await _SessionModel.replace_one(
+            {"sid": key}, {"sid": key, "expiry": expiry, "data": data}, upsert=True
+        )

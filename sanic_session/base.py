@@ -20,7 +20,18 @@ class SessionDict(CallbackDict):
 class BaseSessionInterface(metaclass=abc.ABCMeta):
     # this flag show does this Interface need request/response middleware hooks
 
-    def __init__(self, expiry, prefix, cookie_name, domain, httponly, sessioncookie, samesite, session_name, secure):
+    def __init__(
+        self,
+        expiry,
+        prefix,
+        cookie_name,
+        domain,
+        httponly,
+        sessioncookie,
+        samesite,
+        session_name,
+        secure,
+    ):
         self.expiry = expiry
         self.prefix = prefix
         self.cookie_name = cookie_name
@@ -49,7 +60,9 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
         # Set expires and max-age unless we are using session cookies
         if not self.sessioncookie:
-            response.cookies[self.cookie_name]["expires"] = self._calculate_expires(self.expiry)
+            response.cookies[self.cookie_name]["expires"] = self._calculate_expires(
+                self.expiry
+            )
             response.cookies[self.cookie_name]["max-age"] = self.expiry
 
         if self.domain:

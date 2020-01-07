@@ -60,7 +60,9 @@ class MemcacheSessionInterface(BaseSessionInterface):
                 Adds the `Secure` flag to the session cookie.
         """
         if aiomcache is None:
-            raise RuntimeError("Please install aiomcache: pip install " "sanic_session[aiomcache]")
+            raise RuntimeError(
+                "Please install aiomcache: pip install " "sanic_session[aiomcache]"
+            )
 
         self.memcache_connection = memcache_connection
 
@@ -89,4 +91,6 @@ class MemcacheSessionInterface(BaseSessionInterface):
         return await self.memcache_connection.delete(key.encode())
 
     async def _set_value(self, key, data):
-        return await self.memcache_connection.set(key.encode(), data.encode(), exptime=self.expiry)
+        return await self.memcache_connection.set(
+            key.encode(), data.encode(), exptime=self.expiry
+        )

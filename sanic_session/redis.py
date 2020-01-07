@@ -60,7 +60,9 @@ class RedisSessionInterface(BaseSessionInterface):
                 Adds the `Secure` flag to the session cookie.
         """
         if asyncio_redis is None:
-            raise RuntimeError("Please install asyncio_redis: pip install sanic_session[redis]")
+            raise RuntimeError(
+                "Please install asyncio_redis: pip install sanic_session[redis]"
+            )
 
         self.redis_getter = redis_getter
 
