@@ -4,7 +4,10 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 # Set requirements here
-requirements = ("sanic<=18.12.0;python_version<='3.5'", "sanic;python_version>'3.5'",  "ujson")
+requirements = (
+    "sanic",
+    "ujson",
+)
 
 extras_require = {
     "aioredis": ["aioredis>=1.0.0"],
@@ -22,13 +25,13 @@ extras_require = {
         "sphinx",
         "sphinxcontrib-fulltoc",
         "flake8",
-    ]
+    ],
 }
 
 
 setup(
     name="sanic_session",
-    version="0.5.5",
+    version="0.5.6",
     description=(
         "Provides server-backed sessions for Sanic " "using Redis, Memcache and more."
     ),
@@ -53,9 +56,9 @@ setup(
         "Framework :: AsyncIO",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
