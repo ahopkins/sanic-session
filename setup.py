@@ -31,7 +31,7 @@ extras_require = {
 
 setup(
     name="sanic_session",
-    version="0.5.6",
+    version="0.6.0",
     description=(
         "Provides server-backed sessions for Sanic " "using Redis, Memcache and more."
     ),
