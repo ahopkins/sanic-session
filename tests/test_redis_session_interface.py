@@ -15,8 +15,11 @@ COOKIES = {COOKIE_NAME: SID}
 
 @pytest.fixture
 def mock_dict():
-    class MockDict(dict):
+    class CtxMockDict(dict):
         pass
+
+    class MockDict(dict):
+        ctx = CtxMockDict()
 
     return MockDict
 
@@ -64,7 +67,7 @@ async def test_redis_should_create_new_sid_if_no_cookie(mocker, mock_redis, mock
     await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 1, "should create a new SID with uuid"
-    assert request["session"] == {}, "should return an empty dict as session"
+    assert request.ctx.session["session"] == {}, "should return an empty dict as session"
 
 
 @pytest.mark.asyncio
@@ -139,7 +142,7 @@ async def test_should_attach_session_to_request(mock_redis, mock_dict):
     session_interface = RedisSessionInterface(redis_getter, redis_connection, cookie_name=COOKIE_NAME)
     session = await session_interface.open(request)
 
-    assert session == request["session"]
+    assert session == request.ctx.session["session"]
 
 
 @pytest.mark.asyncio
@@ -179,7 +182,7 @@ async def test_should_expire_redis_cookies_if_modified(mock_dict, mock_redis):
 
     await session_interface.open(request)
 
-    request["session"].clear()
+    request.ctx.session["session"].clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
     assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
@@ -199,10 +202,12 @@ async def test_should_save_in_redis_for_time_specified(mock_dict, mock_redis):
 
     await session_interface.open(request)
 
-    request["session"]["foo"] = "baz"
+    request.ctx.session["session"]["foo"] = "baz"
     await session_interface.save(request, response)
 
-    redis_connection.setex.assert_called_with("session:{}".format(SID), 2592000, ujson.dumps(request["session"]))
+    redis_connection.setex.assert_called_with(
+        "session:{}".format(SID), 2592000, ujson.dumps(request.ctx.session["session"])
+    )
 
 
 @pytest.mark.asyncio
@@ -220,7 +225,7 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_redis):
     session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
 
     await session_interface.open(request)
-    request["session"]["foo"] = "baz"
+    request.ctx.session["session"]["foo"] = "baz"
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].value == SID
@@ -264,7 +269,7 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
 
     await session_interface.open(request)
     await session_interface.save(request, response)
-    request["session"].clear()
+    request.ctx.session["session"].clear()
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]["max-age"] == 0

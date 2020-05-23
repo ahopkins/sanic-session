@@ -15,8 +15,11 @@ COOKIES = {COOKIE_NAME: SID}
 
 @pytest.fixture
 def mock_dict():
-    class MockDict(dict):
+    class CtxMockDict(dict):
         pass
+
+    class MockDict(dict):
+        ctx = CtxMockDict()
 
     return MockDict
 
@@ -31,7 +34,7 @@ async def test_should_create_new_sid_if_no_cookie(mocker, mock_dict):
     await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 1, "should create a new SID with uuid"
-    assert request["session"] == {}, "should return an empty dict as session"
+    assert request.ctx.session["session"] == {}, "should return an empty dict as session"
 
 
 @pytest.mark.asyncio
@@ -99,7 +102,7 @@ async def test_should_attach_session_to_request(mocker, mock_dict):
     session_interface.session_store.get = mocker.MagicMock(return_value=None)
     session = await session_interface.open(request)
 
-    assert session == request["session"]
+    assert session == request.ctx.session["session"]
 
 
 @pytest.mark.asyncio
@@ -135,7 +138,7 @@ async def test_should_expire_cookies_if_modified(mock_dict, mocker):
     await session_interface.open(request)
     response = text("foo")
 
-    request["session"].clear()
+    request.ctx.session["session"].clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
     assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
@@ -152,11 +155,11 @@ async def test_should_save_in_memory_for_time_specified(mock_dict, mocker):
 
     await session_interface.open(request)
     response = text("foo")
-    request["session"]["foo"] = "baz"
+    request.ctx.session["session"]["foo"] = "baz"
     await session_interface.save(request, response)
 
     session_interface.session_store.set.assert_called_with(
-        "session:{}".format(SID), ujson.dumps(request["session"]), 2592000
+        "session:{}".format(SID), ujson.dumps(request.ctx.session["session"]), 2592000
     )
 
 
@@ -175,7 +178,7 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
 
     await session_interface.open(request)
 
-    request["session"]["foo"] = "baz"
+    request.ctx.session["session"]["foo"] = "baz"
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].value == SID
@@ -214,7 +217,7 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
 
     await session_interface.open(request)
     await session_interface.save(request, response)
-    request["session"].clear()
+    request.ctx.session["session"].clear()
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
@@ -287,8 +290,8 @@ async def test_two_sessions(mocker, mock_dict, event_loop):
     await session_interface_2.open(request)
     await session_interface_2.save(request, response)
 
-    assert isinstance(request[SESSION_NAME_1], SessionDict)
-    assert isinstance(request[SESSION_NAME_2], SessionDict)
+    assert isinstance(request.ctx.session[SESSION_NAME_1], SessionDict)
+    assert isinstance(request.ctx.session[SESSION_NAME_2], SessionDict)
 
-    assert request[SESSION_NAME_1] is not request[SESSION_NAME_2]
-    assert request[SESSION_NAME_1].sid != request[SESSION_NAME_2].sid
+    assert request.ctx.session[SESSION_NAME_1] is not request.ctx.session[SESSION_NAME_2]
+    assert request.ctx.session[SESSION_NAME_1].sid != request.ctx.session[SESSION_NAME_2].sid

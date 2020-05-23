@@ -67,9 +67,9 @@ class MongoDBSessionInterface(BaseSessionInterface):
                 Name of the session that will be accessible through the
                 request.
                 e.g. If ``session_name`` is ``alt_session``, it should be
-                accessed like that: ``request['alt_session']``
+                accessed like that: ``request.ctx.session['alt_session']``
                 e.g. And if ``session_name`` is left to default, it should be
-                accessed like that: ``request['session']``
+                accessed like that: ``request.ctx.session['session']``
                 Default: 'session'
             secure (bool, optional):
                 Adds the `Secure` flag to the session cookie.
