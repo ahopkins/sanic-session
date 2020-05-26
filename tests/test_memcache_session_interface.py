@@ -15,8 +15,11 @@ COOKIES = {COOKIE_NAME: SID}
 
 @pytest.fixture
 def mock_dict():
-    class MockDict(dict):
+    class CtxMockDict(dict):
         pass
+
+    class MockDict(dict):
+        ctx = CtxMockDict()
 
     return MockDict
 
@@ -62,7 +65,7 @@ async def test_memcache_should_create_new_sid_if_no_cookie(mocker, mock_memcache
     await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 1, "should create a new SID with uuid"
-    assert request["session"] == {}, "should return an empty dict as session"
+    assert request.ctx.session["session"] == {}, "should return an empty dict as session"
 
 
 @pytest.mark.asyncio
@@ -133,7 +136,7 @@ async def test_should_attach_session_to_request(mock_memcache, mock_dict):
     session_interface = MemcacheSessionInterface(memcache_connection, cookie_name=COOKIE_NAME)
     session = await session_interface.open(request)
 
-    assert session == request["session"]
+    assert session == request.ctx.session["session"]
 
 
 @pytest.mark.asyncio
@@ -171,7 +174,7 @@ async def test_should_expire_memcache_cookies_if_modified(mock_dict, mock_memcac
 
     await session_interface.open(request)
 
-    request["session"].clear()
+    request.ctx.session["session"].clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
     assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
@@ -190,11 +193,11 @@ async def test_should_save_in_memcache_for_time_specified(mock_dict, mock_memcac
 
     await session_interface.open(request)
 
-    request["session"]["foo"] = "baz"
+    request.ctx.session["session"]["foo"] = "baz"
     await session_interface.save(request, response)
 
     memcache_connection.set.assert_called_with(
-        "session:{}".format(SID).encode(), ujson.dumps(request["session"]).encode(), exptime=2592000
+        "session:{}".format(SID).encode(), ujson.dumps(request.ctx.session["session"]).encode(), exptime=2592000
     )
 
 
@@ -212,7 +215,7 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_memcache):
     session_interface = MemcacheSessionInterface(memcache_connection, cookie_name=COOKIE_NAME)
 
     await session_interface.open(request)
-    request["session"]["foo"] = "baz"
+    request.ctx.session["session"]["foo"] = "baz"
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME].value == SID
@@ -253,7 +256,7 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict, mo
 
     await session_interface.open(request)
     await session_interface.save(request, response)
-    request["session"].clear()
+    request.ctx.session["session"].clear()
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]["max-age"] == 0

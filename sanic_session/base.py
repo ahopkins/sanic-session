@@ -7,9 +7,7 @@ from sanic_session.utils import CallbackDict
 
 
 class SessionDict(CallbackDict):
-
     def __init__(self, initial=None, sid=None):
-
         def on_update(self):
             self.modified = True
 
@@ -118,8 +116,11 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
             else:
                 session_dict = SessionDict(sid=sid)
 
+        if not hasattr(request.ctx, "session"):
+            request.ctx.session = {}
+
         # attach the session data to the request, return it for convenience
-        request.ctx.session = {self.session_name: session_dict}
+        request.ctx.session[self.session_name] = session_dict
 
         return session_dict
 
@@ -136,7 +137,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         Returns:
             None
         """
-        if not hasattr(request, "session"):
+        if not hasattr(request.ctx, "session"):
             return
 
         key = self.prefix + request.ctx.session[self.session_name].sid
