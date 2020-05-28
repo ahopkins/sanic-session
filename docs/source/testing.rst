@@ -46,12 +46,12 @@ When building your application you'll eventually want to test that your sessions
 
     @app.route("/")
     async def index(request):
-        if not request.ctx.session['session'].get('foo'):
-            request.ctx.session['session']['foo'] = 0
+        if not request.ctx.session.get('foo'):
+            request.ctx.session['foo'] = 0
 
-        request.ctx.session['session']['foo'] += 1
+        request.ctx.session['foo'] += 1
 
-        response = text(request.ctx.session['session']['foo'])
+        response = text(request.ctx.session['foo'])
 
         return response
 

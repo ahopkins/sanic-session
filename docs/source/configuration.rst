@@ -21,8 +21,8 @@ When initializing a session interface, you have a number of optional arguments f
     One of 'strict' or 'lax'. Defaults to None  https://www.owasp.org/index.php/SameSite
 **session_name** (str, optional):
     | Name of the session that will be accessible through the request.
-    | e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request.ctx.session['alt_session']``
-    | e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request.ctx.session['session']``
+    | e.g. If ``session_name`` is ``alt_session``, it should be accessed like that: ``request.ctx.alt_session``
+    | e.g. And if ``session_name`` is left to default, it should be accessed like that: ``request.ctx.session``
 
     .. note::
 
