@@ -6,6 +6,10 @@ import uuid
 from sanic_session.utils import CallbackDict
 
 
+def get_request_container(request):
+    return request.ctx.__dict__ if hasattr(request, "ctx") else request
+
+
 class SessionDict(CallbackDict):
     def __init__(self, initial=None, sid=None):
         def on_update(self):
@@ -34,7 +38,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         self.secure = secure
 
     def _delete_cookie(self, request, response):
-        response.cookies[self.cookie_name] = getattr(request.ctx, self.session_name).sid
+        req = get_request_container(request)
+        response.cookies[self.cookie_name] = req[self.session_name].sid
 
         # We set expires/max-age even for session cookies to force expiration
         response.cookies[self.cookie_name]["expires"] = datetime.datetime.utcnow()
@@ -46,7 +51,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         return datetime.datetime.fromtimestamp(expires)
 
     def _set_cookie_props(self, request, response):
-        response.cookies[self.cookie_name] = getattr(request.ctx, self.session_name).sid
+        req = get_request_container(request)
+        response.cookies[self.cookie_name] = req[self.session_name].sid
         response.cookies[self.cookie_name]["httponly"] = self.httponly
 
         # Set expires and max-age unless we are using session cookies
@@ -117,7 +123,8 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
                 session_dict = SessionDict(sid=sid)
 
         # attach the session data to the request, return it for convenience
-        setattr(request.ctx, self.session_name, session_dict)
+        req = get_request_container(request)
+        req[self.session_name] = session_dict
 
         return session_dict
 
@@ -134,17 +141,18 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         Returns:
             None
         """
-        if not hasattr(request.ctx, self.session_name):
+        req = get_request_container(request)
+        if self.session_name not in req:
             return
 
-        key = self.prefix + getattr(request.ctx, self.session_name).sid
-        if not getattr(request.ctx, self.session_name):
+        key = self.prefix + req[self.session_name].sid
+        if not req[self.session_name]:
             await self._delete_key(key)
 
-            if getattr(request.ctx, self.session_name).modified:
+            if req[self.session_name].modified:
                 self._delete_cookie(request, response)
             return
 
-        val = ujson.dumps(dict(getattr(request.ctx, self.session_name)))
+        val = ujson.dumps(dict(req[self.session_name]))
         await self._set_value(key, val)
         self._set_cookie_props(request, response)
