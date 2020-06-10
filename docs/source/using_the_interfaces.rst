@@ -58,12 +58,12 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
     @app.route("/")
     async def test(request):
         # interact with the session like a normal dict
-        if not request.ctx.session['session'].get('foo'):
-            request.ctx.session['session']['foo'] = 0
+        if not request.ctx.session.get('foo'):
+            request.ctx.session['foo'] = 0
 
-        request.ctx.session['session']['foo'] += 1
+        request.ctx.session['foo'] += 1
 
-        response = text(request.ctx.session['session']['foo'])
+        response = text(request.ctx.session['foo'])
 
         return response
 
@@ -101,12 +101,12 @@ This example shows little different approach. You can use classic Flask extensio
     @app.route("/")
     async def test(request):
         # interact with the session like a normal dict
-        if not request.ctx.session['session'].get('foo'):
-            request.ctx.session['session']['foo'] = 0
+        if not request.ctx.session.get('foo'):
+            request.ctx.session['foo'] = 0
 
-        request.ctx.session['session']['foo'] += 1
+        request.ctx.session['foo'] += 1
 
-        response = text(request.ctx.session['session']['foo'])
+        response = text(request.ctx.session['foo'])
 
         return response
 
@@ -146,12 +146,12 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
     @app.route("/")
     async def test(request):
         # interact with the session like a normal dict
-        if not request.ctx.session['session'].get('foo'):
-            request.ctx.session['session']['foo'] = 0
+        if not request.ctx.session.get('foo'):
+            request.ctx.session['foo'] = 0
 
-        request.ctx.session['session']['foo'] += 1
+        request.ctx.session['foo'] += 1
 
-        response = text(request.ctx.session['session']['foo'])
+        response = text(request.ctx.session['foo'])
 
         return response
 
@@ -181,12 +181,12 @@ In-Memory
     @app.route("/")
     async def index(request):
         # interact with the session like a normal dict
-        if not request.ctx.session['session'].get('foo'):
-            request.ctx.session['session']['foo'] = 0
+        if not request.ctx.session.get('foo'):
+            request.ctx.session['foo'] = 0
 
-        request.ctx.session['session']['foo'] += 1
+        request.ctx.session['foo'] += 1
 
-        return text(request.ctx.session['session']['foo'])
+        return text(request.ctx.session['foo'])
 
     if __name__ == "__main__":
         app.run(host="0.0.0.0", port=8000, debug=True)
