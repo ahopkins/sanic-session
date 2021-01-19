@@ -1,9 +1,9 @@
 # Sanic session management for humans
-[![Build Status](https://img.shields.io/travis/xen/sanic_session.svg?branch=master)](https://travis-ci.org/xen/sanic_session)
 [![ReadTheDocs](https://img.shields.io/readthedocs/sanic_session.svg)](https://sanic-session.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://img.shields.io/pypi/v/sanic_session.svg)](https://pypi.org/project/sanic_session/)
-[![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/xen/sanic_session)
+
+:warning: Warning: This poject in Pull-Request-Only mode. I don't use Sanic anymore for any of my projects. I recommend to use AIOHTTP since it more mature and have bigger adoption (I'm not judging by github stars only). Though I will accept pull requests from others if you want to see updates in the code. 
 
 `sanic_session` is session management extension for [Sanic](http://sanic.readthedocs.io/) that integrates server-backed sessions with most convenient API.
 
