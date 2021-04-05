@@ -22,10 +22,10 @@ class Session:
 
     def init_app(self, app, interface):
         self.interface = interface or InMemorySessionInterface()
-        if not hasattr(app, "extensions"):
-            app.extensions = {}
+        if not hasattr(app.ctx, "extensions"):
+            app.ctx.extensions = {}
 
-        app.extensions[self.interface.session_name] = self  # session_name defaults to 'session'
+        app.ctx.extensions[self.interface.session_name] = self  # session_name defaults to 'session'
 
         # @app.middleware('request')
         async def add_session_to_request(request):
