@@ -93,7 +93,10 @@ This example shows little different approach. You can use classic Flask extensio
 
     @app.listener('before_server_start')
     async def server_init(app, loop):
-        app.redis = await aioredis.create_redis_pool(app.config['redis'])
+        # For aioredis 1.x and older
+        # app.redis = await aioredis.create_redis_pool(app.config['redis'])
+        # For aioredis 2.x
+        app.redis = aioredis.from_url(app.config['redis'], decode_responses=True)
         # init extensions fabrics
         session.init_app(app, interface=AIORedisSessionInterface(app.redis))
 
