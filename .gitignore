@@ -12,3 +12,4 @@ __pycache__
 */build
 dist
 .idea/
+[._]*.sw[a-p]
