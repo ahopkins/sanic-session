@@ -3,7 +3,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://img.shields.io/pypi/v/sanic_session.svg)](https://pypi.org/project/sanic_session/)
 
-:warning: Warning: This package is known to have some compatibility issues with recent Sanic versions. As of Dec 2022, I will be working to fix these issues and a new release should be out in Q1 2023. Thank you.
 
 `sanic-session` is session management extension for [Sanic](https://sanic.dev) that integrates server-backed sessions with most convenient API.
 
