@@ -5,9 +5,9 @@
 
 :warning: Warning: This package is known to have some compatibility issues with recent Sanic versions. As of Dec 2022, I will be working to fix these issues and a new release should be out in Q1 2023. Thank you.
 
-`sanic_session` is session management extension for [Sanic](http://sanic.readthedocs.io/) that integrates server-backed sessions with most convenient API.
+`sanic-session` is session management extension for [Sanic](https://sanic.dev) that integrates server-backed sessions with most convenient API.
 
-`sanic_session` provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
+`sanic-session` provides a number of *session interfaces* for you to store a client's session data. The interfaces available right now are:
 
   * Redis (supports both drivers `aioredis` and `asyncio_redis`)
   * Memcache (via `aiomcache`)
@@ -20,9 +20,6 @@ Install with `pip` (there is other options for different drivers, check document
 
 `pip install sanic_session`
 
-or if you prefer `Pipenv`:
-
-`pipenv install sanic_session`
 
 ## Documentation
 
