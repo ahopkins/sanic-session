@@ -3,11 +3,13 @@ from .memcache import MemcacheSessionInterface
 from .memory import InMemorySessionInterface
 from .mongodb import MongoDBSessionInterface
 from .redis import RedisSessionInterface
+from .multimemory import MultiMemorySessionInterface
 
 __all__ = (
     "MemcacheSessionInterface",
     "RedisSessionInterface",
     "InMemorySessionInterface",
+    "MultiMemorySessionInterface",
     "MongoDBSessionInterface",
     "AIORedisSessionInterface",
     "Session",
@@ -44,3 +46,4 @@ class Session:
 
         app.request_middleware.appendleft(add_session_to_request)
         app.response_middleware.append(save_session)
+        self.interface._attach_app(app)
