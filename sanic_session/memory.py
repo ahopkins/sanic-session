@@ -1,3 +1,4 @@
+from typing import Optional
 from sanic_session.base import BaseSessionInterface
 from sanic_session.utils import ExpiringDict
 
@@ -5,13 +6,13 @@ from sanic_session.utils import ExpiringDict
 class InMemorySessionInterface(BaseSessionInterface):
     def __init__(
         self,
-        domain: str = None,
+        domain: Optional[str] = None,
         expiry: int = 2592000,
         httponly: bool = True,
         cookie_name: str = "session",
         prefix: str = "session:",
         sessioncookie: bool = False,
-        samesite: str = None,
+        samesite: Optional[str] = None,
         session_name="session",
         secure: bool = False,
     ):

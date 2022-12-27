@@ -4,7 +4,7 @@ import time
 import uuid
 
 import ujson
-
+from sanic import Sanic
 from sanic_session.utils import CallbackDict
 
 
@@ -106,6 +106,9 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
     async def _set_value(self, key: str, data: SessionDict):
         """Set value for datastore"""
         raise NotImplementedError
+
+    def _attach_app(self, app: Sanic):
+        ...
 
     async def open(self, request) -> SessionDict:
         """
