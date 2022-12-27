@@ -11,13 +11,18 @@ release: ## create new release
 
 lint: ## run linter
 	flake8 sanic_session/ tests
-	black -l 120 --check sanic_session/ tests/
+	isort sanic_session tests --check
+	black sanic_session tests --check
 
 format: ## format code
-	black -l 120 sanic_session/ tests
+	isort sanic_session tests
+	black sanic_session tests
+
+pretty: format
 
 test: ## run tests
 	py.test -vs --cov sanic_session/ tests
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
