@@ -31,7 +31,7 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
     from sanic.response import text
     from sanic_session import Session, RedisSessionInterface
 
-    app = Sanic()
+    app = Sanic("Test")
 
 
     class Redis:
@@ -39,12 +39,13 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
         A simple wrapper class that allows you to share a connection
         pool across your application.
         """
+
         _pool = None
 
         async def get_redis_pool(self):
             if not self._pool:
                 self._pool = await asyncio_redis.Pool.create(
-                    host='localhost', port=6379, poolsize=10
+                    host="localhost", port=6379, poolsize=10
                 )
 
             return self._pool
@@ -58,12 +59,12 @@ To integrate Redis with :code:`sanic_session` you need to pass a getter method i
     @app.route("/")
     async def test(request):
         # interact with the session like a normal dict
-        if not request.ctx.session.get('foo'):
-            request.ctx.session['foo'] = 0
+        if not request.ctx.session.get("foo"):
+            request.ctx.session["foo"] = 0
 
-        request.ctx.session['foo'] += 1
+        request.ctx.session["foo"] += 1
 
-        response = text(request.ctx.session['foo'])
+        response = text(str(request.ctx.session["foo"]))
 
         return response
 
@@ -87,29 +88,33 @@ This example shows little different approach. You can use classic Flask extensio
     from sanic.response import text
     from sanic_session import Session, AIORedisSessionInterface
 
-    app = Sanic(__name__, load_env=False)
+    app = Sanic("Test")
     # init extensions
-    session = Session()
+    session = Session(app=app)
+    app.config.REDIS_DSN = "redis://localhost:6379/0"
 
-    @app.listener('before_server_start')
+
+    @app.listener("before_server_start")
     async def server_init(app, loop):
         # For aioredis 1.x and older
         # app.redis = await aioredis.create_redis_pool(app.config['redis'])
         # For aioredis 2.x
-        app.redis = aioredis.from_url(app.config['redis'], decode_responses=True)
+        app.ctx.redis = aioredis.from_url(
+            app.config.REDIS_DSN, decode_responses=True
+        )
         # init extensions fabrics
-        session.init_app(app, interface=AIORedisSessionInterface(app.redis))
+        session.init_app(app, interface=AIORedisSessionInterface(app.ctx.redis))
 
 
     @app.route("/")
     async def test(request):
         # interact with the session like a normal dict
-        if not request.ctx.session.get('foo'):
-            request.ctx.session['foo'] = 0
+        if not request.ctx.session.get("foo"):
+            request.ctx.session["foo"] = 0
 
-        request.ctx.session['foo'] += 1
+        request.ctx.session["foo"] += 1
 
-        response = text(request.ctx.session['foo'])
+        response = text(str(request.ctx.session["foo"]))
 
         return response
 
@@ -129,32 +134,29 @@ To integrate memcache with :code:`sanic_session` you need to pass an :code:`aiom
 .. code-block:: python
 
     import aiomcache
-    import uvloop
 
     from sanic import Sanic
     from sanic.response import text
     from sanic_session import Session, MemcacheSessionInterface
 
-    app = Sanic()
-
-    # create a uvloop to pass into the memcache client and sanic
-    loop = uvloop.new_event_loop()
+    app = Sanic("Test")
 
     # create a memcache client
-    client = aiomcache.Client("127.0.0.1", 11211, loop=loop)
+    client = aiomcache.Client("127.0.0.1", 11211)
 
     # pass the memcache client into the session
     session = Session(app, interface=MemcacheSessionInterface(client))
 
+
     @app.route("/")
     async def test(request):
         # interact with the session like a normal dict
-        if not request.ctx.session.get('foo'):
-            request.ctx.session['foo'] = 0
+        if not request.ctx.session.get("foo"):
+            request.ctx.session["foo"] = 0
 
-        request.ctx.session['foo'] += 1
+        request.ctx.session["foo"] += 1
 
-        response = text(request.ctx.session['foo'])
+        response = text(str(request.ctx.session["foo"]))
 
         return response
 
@@ -173,7 +175,7 @@ In-Memory
     from sanic_session import Session
 
 
-    app = Sanic()
+    app = Sanic("Test")
 
     Session(app)  # because InMemorySessionInterface used by default
 
@@ -181,15 +183,16 @@ In-Memory
     #   from sanic_session import InMemorySessionInterface
     #   session = Session(app, interface=InMemorySessionInterface())
 
+
     @app.route("/")
     async def index(request):
         # interact with the session like a normal dict
-        if not request.ctx.session.get('foo'):
-            request.ctx.session['foo'] = 0
+        if not request.ctx.session.get("foo"):
+            request.ctx.session["foo"] = 0
 
-        request.ctx.session['foo'] += 1
+        request.ctx.session["foo"] += 1
 
-        return text(request.ctx.session['foo'])
+        return text(str(request.ctx.session["foo"]))
 
     if __name__ == "__main__":
         app.run(host="0.0.0.0", port=8000, debug=True)
