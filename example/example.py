@@ -2,7 +2,7 @@ from sanic import Sanic
 from sanic.response import text
 from sanic_session import Session, InMemorySessionInterface
 
-app = Sanic(name="Example App")
+app = Sanic(name="ExampleApp")
 session = Session(app, interface=InMemorySessionInterface())
 
 
@@ -14,8 +14,8 @@ async def index(request):
 
     request.ctx.session["foo"] += 1
 
-    return text(request.ctx.session["foo"])
+    return text(str(request.ctx.session["foo"]))
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(port=9999, dev=True)
