@@ -22,6 +22,8 @@ extras_require = {
         "pytest-cov",
         "wheel",
         "black;python_version>='3.6'",
+        "isort",
+        "mypy",
         "sphinx",
         "sphinxcontrib-fulltoc",
         "flake8",
@@ -30,16 +32,17 @@ extras_require = {
 
 
 setup(
-    name="sanic_session",
+    name="sanic-session",
     version="0.8.0",
     description=(
-        "Provides server-backed sessions for Sanic " "using Redis, Memcache and more."
+        "Provides server-backed sessions for Sanic "
+        "using Redis, Memcache and more."
     ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="http://github.com/subyraman/sanic_session",
-    author="Suby Raman, Mikhail Kashkin",
-    author_email="m@xen.ru",
+    author="Suby Raman, Mikhail Kashkin, Adam Hopkins",
+    author_email="adam@amhopkins.com",
     license="MIT",
     packages=["sanic_session"],
     # Kludge: Specifying requirements for setup and install works around
@@ -56,10 +59,11 @@ setup(
         "Framework :: AsyncIO",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
