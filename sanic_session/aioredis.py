@@ -56,7 +56,9 @@ class AIORedisSessionInterface(BaseSessionInterface):
                 Adds the `Secure` flag to the session cookie.
         """
         if aioredis is None:
-            raise RuntimeError("Please install aioredis: pip install sanic_session[aioredis]")
+            raise RuntimeError(
+                "Please install aioredis: pip install sanic_session[aioredis]"
+            )
 
         self.redis = redis
 

@@ -1,12 +1,13 @@
-import time
 import datetime
-from sanic.response import text
-from sanic_session.memory import InMemorySessionInterface
-from sanic_session.base import SessionDict
-import pytest
+import time
 import uuid
-import ujson
 
+import pytest
+import ujson
+from sanic.response import text
+
+from sanic_session.base import SessionDict
+from sanic_session.memory import InMemorySessionInterface
 
 SID = "5235262626"
 COOKIE_NAME = "cookie"
@@ -47,16 +48,20 @@ async def test_should_return_data_from_session_store(mocker, mock_dict):
     data = {"foo": "bar"}
 
     session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps(data))
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps(data)
+    )
 
     session = await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 0, "should not create a new SID"
-    assert session_interface.session_store.get.call_count == 1, "should call on redis once"
+    assert (
+        session_interface.session_store.get.call_count == 1
+    ), "should call on redis once"
 
-    assert session_interface.session_store.get.call_args_list[0][0][0] == "session:{}".format(
-        SID
-    ), "should get from store with prefix + SID"
+    assert session_interface.session_store.get.call_args_list[0][0][
+        0
+    ] == "session:{}".format(SID), "should get from store with prefix + SID"
 
     assert session.get("foo") == "bar", "session data is pulled from store"
 
@@ -69,13 +74,17 @@ async def test_should_use_prefix_in_store_key(mocker, mock_dict):
 
     request.cookies = COOKIES
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, prefix=prefix)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps(data))
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, prefix=prefix
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps(data)
+    )
     await session_interface.open(request)
 
-    assert session_interface.session_store.get.call_args_list[0][0][0] == "{}{}".format(
-        prefix, SID
-    ), "should call redis with prefix + SID"
+    assert session_interface.session_store.get.call_args_list[0][0][
+        0
+    ] == "{}{}".format(prefix, SID), "should call redis with prefix + SID"
 
 
 @pytest.mark.asyncio
@@ -84,10 +93,14 @@ async def test_should_use_return_empty_session_via_store(mocker, mock_dict):
     prefix = "differentprefix:"
     request.cookies = COOKIES
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, prefix=prefix)
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, prefix=prefix
+    )
     session_interface.session_store.get = mocker.MagicMock(return_value=None)
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, prefix=prefix)
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, prefix=prefix
+    )
     session = await session_interface.open(request)
 
     assert session == {}
@@ -122,7 +135,9 @@ async def test_should_delete_session_from_store(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert session_interface.session_store.delete.call_count == 1
-    assert session_interface.session_store.delete.call_args_list[0][0][0] == "session:{}".format(SID)
+    assert session_interface.session_store.delete.call_args_list[0][0][
+        0
+    ] == "session:{}".format(SID)
     assert response.cookies == {}, "should not change response cookies"
 
 
@@ -132,7 +147,9 @@ async def test_should_expire_cookies_if_modified(mock_dict, mocker):
     request.cookies = COOKIES
 
     session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps({"foo": "bar"}))
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({"foo": "bar"})
+    )
     session_interface.session_store.delete = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -141,7 +158,9 @@ async def test_should_expire_cookies_if_modified(mock_dict, mocker):
     request.ctx.session.clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
-    assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    assert (
+        response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    )
 
 
 @pytest.mark.asyncio
@@ -150,7 +169,9 @@ async def test_should_save_in_memory_for_time_specified(mock_dict, mocker):
     request.cookies = COOKIES
 
     session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps({"foo": "bar"}))
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({"foo": "bar"})
+    )
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -173,7 +194,9 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
     time.time.return_value = 1488576462.138493
 
     session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps({"foo": "bar"}))
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({"foo": "bar"})
+    )
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -183,7 +206,9 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict):
 
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]["max-age"] == 2592000
-    assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    assert (
+        response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    )
 
 
 @pytest.mark.asyncio
@@ -193,8 +218,12 @@ async def test_sessioncookie_should_omit_request_headers(mocker, mock_dict):
     request = mock_dict()
     request.cookies = COOKIES
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, sessioncookie=True)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps({"foo": "bar"}))
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, sessioncookie=True
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({"foo": "bar"})
+    )
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -211,8 +240,12 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     request = mock_dict()
     request.cookies = COOKIES
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, sessioncookie=True)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps({"foo": "bar"}))
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, sessioncookie=True
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps({"foo": "bar"})
+    )
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -221,7 +254,9 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
-    assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    assert (
+        response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    )
 
 
 @pytest.mark.asyncio
@@ -232,8 +267,12 @@ async def test_samesite_dict_set_lax(mocker, mock_dict):
     request = mock_dict()
     request.cookies = COOKIES
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, samesite=SAMESITE)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps(dict(foo="bar")))
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, samesite=SAMESITE
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps(dict(foo="bar"))
+    )
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -251,8 +290,12 @@ async def test_samesite_dict_set_None(mocker, mock_dict):
     request = mock_dict()
     request.cookies = COOKIES
 
-    session_interface = InMemorySessionInterface(cookie_name=COOKIE_NAME, samesite=SAMESITE)
-    session_interface.session_store.get = mocker.MagicMock(return_value=ujson.dumps(dict(foo="bar")))
+    session_interface = InMemorySessionInterface(
+        cookie_name=COOKIE_NAME, samesite=SAMESITE
+    )
+    session_interface.session_store.get = mocker.MagicMock(
+        return_value=ujson.dumps(dict(foo="bar"))
+    )
     session_interface.session_store.set = mocker.MagicMock()
 
     await session_interface.open(request)
@@ -293,5 +336,10 @@ async def test_two_sessions(mocker, mock_dict, event_loop):
     assert isinstance(getattr(request.ctx, SESSION_NAME_1), SessionDict)
     assert isinstance(getattr(request.ctx, SESSION_NAME_2), SessionDict)
 
-    assert getattr(request.ctx, SESSION_NAME_1) is not getattr(request.ctx, SESSION_NAME_2)
-    assert getattr(request.ctx, SESSION_NAME_1).sid != getattr(request.ctx, SESSION_NAME_2).sid
+    assert getattr(request.ctx, SESSION_NAME_1) is not getattr(
+        request.ctx, SESSION_NAME_2
+    )
+    assert (
+        getattr(request.ctx, SESSION_NAME_1).sid
+        != getattr(request.ctx, SESSION_NAME_2).sid
+    )

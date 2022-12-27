@@ -1,12 +1,13 @@
-import time
 import datetime
-from sanic.response import text
-from sanic_session.redis import RedisSessionInterface
-import pytest
+import time
 import uuid
-import ujson
-
 from unittest.mock import Mock
+
+import pytest
+import ujson
+from sanic.response import text
+
+from sanic_session.redis import RedisSessionInterface
 
 SID = "5235262626"
 COOKIE_NAME = "cookie"
@@ -48,14 +49,18 @@ async def get_interface_and_request(mocker, redis_getter, data=None):
     redis_connection.get = mock_coroutine(ujson.dumps(data))
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME
+    )
     await session_interface.open(request)
 
     return session_interface, request
 
 
 @pytest.mark.asyncio
-async def test_redis_should_create_new_sid_if_no_cookie(mocker, mock_redis, mock_dict):
+async def test_redis_should_create_new_sid_if_no_cookie(
+    mocker, mock_redis, mock_dict
+):
     request = mock_dict()
     request.cookies = {}
     redis_connection = mock_redis()
@@ -83,7 +88,9 @@ async def test_should_return_data_from_redis(mocker, mock_dict, mock_redis):
     redis_connection.get = mock_coroutine(ujson.dumps(data))
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME
+    )
     session = await session_interface.open(request)
 
     assert uuid.uuid4.call_count == 0, "should not create a new SID"
@@ -106,7 +113,9 @@ async def test_should_use_prefix_in_redis_key(mocker, mock_dict, mock_redis):
     redis_connection.get = mock_coroutine(ujson.dumps(data))
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME, prefix=prefix)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME, prefix=prefix
+    )
     await session_interface.open(request)
 
     assert redis_connection.get.call_args_list[0][0][0] == "{}{}".format(
@@ -115,7 +124,9 @@ async def test_should_use_prefix_in_redis_key(mocker, mock_dict, mock_redis):
 
 
 @pytest.mark.asyncio
-async def test_should_use_return_empty_session_via_redis(mock_redis, mock_dict):
+async def test_should_use_return_empty_session_via_redis(
+    mock_redis, mock_dict
+):
     request = mock_dict()
     prefix = "differentprefix:"
     request.cookies = COOKIES
@@ -124,7 +135,9 @@ async def test_should_use_return_empty_session_via_redis(mock_redis, mock_dict):
     redis_connection.get = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME, prefix=prefix)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME, prefix=prefix
+    )
     session = await session_interface.open(request)
 
     assert session == {}
@@ -139,7 +152,9 @@ async def test_should_attach_session_to_request(mock_redis, mock_dict):
     redis_connection.get = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, redis_connection, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, redis_connection, cookie_name=COOKIE_NAME
+    )
     session = await session_interface.open(request)
 
     assert session == request.ctx.session
@@ -157,13 +172,17 @@ async def test_should_delete_session_from_redis(mocker, mock_redis, mock_dict):
     redis_connection.delete = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME
+    )
 
     await session_interface.open(request)
     await session_interface.save(request, response)
 
     assert redis_connection.delete.call_count == 1
-    assert redis_connection.delete.call_args_list[0][0][0] == ["session:{}".format(SID)]
+    assert redis_connection.delete.call_args_list[0][0][0] == [
+        "session:{}".format(SID)
+    ]
     assert response.cookies == {}, "should not change response cookies"
 
 
@@ -178,14 +197,18 @@ async def test_should_expire_redis_cookies_if_modified(mock_dict, mock_redis):
     redis_connection.delete = mock_coroutine()
     redis_getter = mock_coroutine(redis_connection)
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME
+    )
 
     await session_interface.open(request)
 
     request.ctx.session.clear()
     await session_interface.save(request, response)
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
-    assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    assert (
+        response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    )
 
 
 @pytest.mark.asyncio
@@ -198,14 +221,18 @@ async def test_should_save_in_redis_for_time_specified(mock_dict, mock_redis):
     redis_getter = mock_coroutine(redis_connection)
     response = text("foo")
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME
+    )
 
     await session_interface.open(request)
 
     request.ctx.session["foo"] = "baz"
     await session_interface.save(request, response)
 
-    redis_connection.setex.assert_called_with("session:{}".format(SID), 2592000, ujson.dumps(request.ctx.session))
+    redis_connection.setex.assert_called_with(
+        "session:{}".format(SID), 2592000, ujson.dumps(request.ctx.session)
+    )
 
 
 @pytest.mark.asyncio
@@ -220,7 +247,9 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_redis):
     mocker.patch("time.time")
     time.time.return_value = 1488576462.138493
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME
+    )
 
     await session_interface.open(request)
     request.ctx.session["foo"] = "baz"
@@ -228,7 +257,9 @@ async def test_should_reset_cookie_expiry(mocker, mock_dict, mock_redis):
 
     assert response.cookies[COOKIE_NAME].value == SID
     assert response.cookies[COOKIE_NAME]["max-age"] == 2592000
-    assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    assert (
+        response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    )
 
 
 @pytest.mark.asyncio
@@ -242,7 +273,9 @@ async def test_sessioncookie_should_omit_request_headers(mocker, mock_dict):
     redis_getter = mock_coroutine(redis_connection)
     response = text("foo")
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME, sessioncookie=True)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME, sessioncookie=True
+    )
 
     await session_interface.open(request)
     await session_interface.save(request, response)
@@ -263,7 +296,9 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     redis_getter = mock_coroutine(redis_connection)
     response = text("foo")
 
-    session_interface = RedisSessionInterface(redis_getter, cookie_name=COOKIE_NAME, sessioncookie=True)
+    session_interface = RedisSessionInterface(
+        redis_getter, cookie_name=COOKIE_NAME, sessioncookie=True
+    )
 
     await session_interface.open(request)
     await session_interface.save(request, response)
@@ -271,4 +306,6 @@ async def test_sessioncookie_delete_has_expiration_headers(mocker, mock_dict):
     await session_interface.save(request, response)
 
     assert response.cookies[COOKIE_NAME]["max-age"] == 0
-    assert response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    assert (
+        response.cookies[COOKIE_NAME]["expires"] < datetime.datetime.utcnow()
+    )

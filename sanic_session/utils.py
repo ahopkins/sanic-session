@@ -1,5 +1,5 @@
 import time
-from typing import Union, Any
+from typing import Any, Union
 
 
 class _Missing(object):
