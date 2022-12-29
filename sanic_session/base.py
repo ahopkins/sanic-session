@@ -47,6 +47,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         self.samesite = samesite
         self.session_name = session_name
         self.secure = secure
+        self.renew_cookie = False
 
     def _delete_cookie(self, request, response):
         req = get_request_container(request)
@@ -65,6 +66,12 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
     def _set_cookie_props(self, request, response):
         req = get_request_container(request)
+        if (
+            not self.renew_cookie
+            and request.cookies.get(self.cookie_name)
+            == req[self.session_name].sid
+        ):
+            return  # session_id same with client, do nothing
         response.cookies[self.cookie_name] = req[self.session_name].sid
         response.cookies[self.cookie_name]["httponly"] = self.httponly
 

@@ -1,8 +1,11 @@
+from typing import Optional
 from .aioredis import AIORedisSessionInterface
 from .memcache import MemcacheSessionInterface
 from .memory import InMemorySessionInterface
 from .mongodb import MongoDBSessionInterface
 from .redis import RedisSessionInterface
+from sanic import Sanic
+from .base import BaseSessionInterface
 
 __all__ = (
     "MemcacheSessionInterface",
@@ -15,13 +18,23 @@ __all__ = (
 
 
 class Session:
-    def __init__(self, app=None, interface=None):
-        self.interface = None
+    def __init__(
+        self,
+        app: Optional[Sanic] = None,
+        interface: Optional[BaseSessionInterface] = None,
+        renew_cookie: bool = False,
+    ):
+        self.interface = interface
+        self.renew_cookie = renew_cookie
         if app:
             self.init_app(app, interface)
 
-    def init_app(self, app, interface):
+    def init_app(
+        self, app: Sanic, interface: Optional[BaseSessionInterface] = None
+    ):
         self.interface = interface or InMemorySessionInterface()
+        self.interface.renew_cookie = self.renew_cookie
+
         if not hasattr(app.ctx, "extensions"):
             app.ctx.extensions = {}
 
