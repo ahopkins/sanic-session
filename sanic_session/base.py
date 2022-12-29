@@ -2,10 +2,10 @@ import abc
 import datetime
 import time
 import uuid
-from sanic_session.policy import RenewalPolicy
 
 import ujson
 
+from sanic_session.policy import RenewalPolicy
 from sanic_session.utils import CallbackDict
 
 

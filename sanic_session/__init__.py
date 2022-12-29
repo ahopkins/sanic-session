@@ -1,12 +1,14 @@
 from typing import Optional, Union
+
+from sanic import Sanic
+
 from .aioredis import AIORedisSessionInterface
+from .base import BaseSessionInterface
 from .memcache import MemcacheSessionInterface
 from .memory import InMemorySessionInterface
 from .mongodb import MongoDBSessionInterface
-from .redis import RedisSessionInterface
-from sanic import Sanic
-from .base import BaseSessionInterface
 from .policy import RenewalPolicy
+from .redis import RedisSessionInterface
 
 __all__ = (
     "MemcacheSessionInterface",
