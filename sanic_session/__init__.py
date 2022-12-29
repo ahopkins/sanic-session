@@ -1,9 +1,9 @@
 from .aioredis import AIORedisSessionInterface
+from .extension import Session
 from .memcache import MemcacheSessionInterface
 from .memory import InMemorySessionInterface
 from .mongodb import MongoDBSessionInterface
 from .redis import RedisSessionInterface
-from .extension import Session
 
 __all__ = (
     "MemcacheSessionInterface",
