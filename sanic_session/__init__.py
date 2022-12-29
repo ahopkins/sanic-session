@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from .aioredis import AIORedisSessionInterface
 from .memcache import MemcacheSessionInterface
 from .memory import InMemorySessionInterface
@@ -6,6 +6,7 @@ from .mongodb import MongoDBSessionInterface
 from .redis import RedisSessionInterface
 from sanic import Sanic
 from .base import BaseSessionInterface
+from .policy import RenewalPolicy
 
 __all__ = (
     "MemcacheSessionInterface",
@@ -22,10 +23,14 @@ class Session:
         self,
         app: Optional[Sanic] = None,
         interface: Optional[BaseSessionInterface] = None,
-        renew_cookie: bool = False,
+        renew_cookie: Union[str, RenewalPolicy] = RenewalPolicy.NEVER,
     ):
         self.interface = interface
-        self.renew_cookie = renew_cookie
+        self.renew_cookie = (
+            renew_cookie
+            if isinstance(renew_cookie, RenewalPolicy)
+            else RenewalPolicy[renew_cookie.upper()]
+        )
         if app:
             self.init_app(app, interface)
 

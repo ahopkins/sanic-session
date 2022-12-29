@@ -2,6 +2,7 @@ import abc
 import datetime
 import time
 import uuid
+from sanic_session.policy import RenewalPolicy
 
 import ujson
 
@@ -47,7 +48,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         self.samesite = samesite
         self.session_name = session_name
         self.secure = secure
-        self.renew_cookie = False
+        self.renew_cookie: RenewalPolicy = RenewalPolicy.NEVER
 
     def _delete_cookie(self, request, response):
         req = get_request_container(request)
@@ -67,7 +68,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
     def _set_cookie_props(self, request, response):
         req = get_request_container(request)
         if (
-            not self.renew_cookie
+            self.renew_cookie is not RenewalPolicy.ALWAYS
             and request.cookies.get(self.cookie_name)
             == req[self.session_name].sid
         ):
