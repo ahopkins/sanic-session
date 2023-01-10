@@ -42,5 +42,5 @@ class Session:
             """
             await self.interface.save(request, response)
 
-        app.request_middleware.appendleft(add_session_to_request)
-        app.response_middleware.append(save_session)
+        app.register_middleware(add_session_to_request, "request")
+        app.register_middleware(save_session, "response")
