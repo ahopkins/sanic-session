@@ -1,9 +1,13 @@
 from sanic_session.base import BaseSessionInterface
 
 try:
-    import aioredis
+    # redis was merged with aioredis https://github.com/redis/redis-py/releases/tag/v4.2.0rc1
+    from redis import asyncio as aioredis
 except ImportError:
-    aioredis = None
+    try:
+        import aioredis
+    except ImportError:
+        aioredis = None
 
 
 class AIORedisSessionInterface(BaseSessionInterface):
