@@ -49,14 +49,7 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
         self.secure = secure
 
     def _delete_cookie(self, request, response):
-        req = get_request_container(request)
-        response.cookies[self.cookie_name] = req[self.session_name].sid
-
-        # We set expires/max-age even for session cookies to force expiration
-        response.cookies[self.cookie_name][
-            "expires"
-        ] = datetime.datetime.utcnow()
-        response.cookies[self.cookie_name]["max-age"] = 0
+        response.delete_cookie(self.cookie_name)
 
     @staticmethod
     def _calculate_expires(expiry):
@@ -65,24 +58,26 @@ class BaseSessionInterface(metaclass=abc.ABCMeta):
 
     def _set_cookie_props(self, request, response):
         req = get_request_container(request)
-        response.cookies[self.cookie_name] = req[self.session_name].sid
-        response.cookies[self.cookie_name]["httponly"] = self.httponly
+        cookie = response.add_cookie(
+            self.cookie_name,
+            req[self.session_name].sid,
+            httponly=self.httponly,
+            secure=False
+        )
 
         # Set expires and max-age unless we are using session cookies
         if not self.sessioncookie:
-            response.cookies[self.cookie_name][
-                "expires"
-            ] = self._calculate_expires(self.expiry)
-            response.cookies[self.cookie_name]["max-age"] = self.expiry
+            cookie.expires = self._calculate_expires(self.expiry)
+            cookie.max_age = self.expiry
 
         if self.domain:
-            response.cookies[self.cookie_name]["domain"] = self.domain
+            cookie.domain = self.domain
 
         if self.samesite is not None:
-            response.cookies[self.cookie_name]["samesite"] = self.samesite
+            cookie.samesite = self.samesite
 
         if self.secure:
-            response.cookies[self.cookie_name]["secure"] = True
+            cookie.secure = True
 
     @abc.abstractmethod
     async def _get_value(self, prefix: str, sid: str):
